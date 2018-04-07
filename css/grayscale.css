@@ -3,9 +3,6 @@
  * Copyright 2013-2017 Start Bootstrap
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-grayscale/blob/master/LICENSE)
  */
-
-.error {color: #FF0000;}
-
 #homepage-form{
     padding:2%;
     background-color: rgba(250,250,250,0.3) !important;
@@ -21,94 +18,6 @@ footer{
 }
 #social a{
     padding: 10px 10px 10px 0px;
-}
-
-
-@media screen and (max-width: 600px) {
-  .topnav a:not(:first-child), .dropdown .nav-link {
-    display: none;
-  }
-  .topnav a.icon {
-    float: right;
-    display: block;
-  }
-}
-
-@media screen and (max-width: 600px) {
-  .topnav.responsive {position: relative;}
-  .topnav.responsive .icon {
-    position: absolute;
-    right: 0;
-    top: 0;
-}
-  .topnav.responsive a {
-    float: none;
-    display: block;
-    text-align: left;
-  }
-  .topnav.responsive .dropdown {float: none;}
-  .topnav.responsive .dropdown-content {position: relative;}
-  .topnav.responsive .dropdown .nav-link {
-    display: block;
-    width: 100%;
-    text-align: left;
-  }
-}
-
-.w3-teal, .w3-hover-teal:hover{
-    padding-top: 20px;
-    color: black !important;
-    background-color: #C0C0C0!important;
-}
-
-.grid-container {
-  display: grid;
-  grid-template-columns: auto auto;
-  padding: 10px;
-    float: left;
-}
-.grid-item {
-  padding: 10px;
-  font-size: 18px;
-    text-align: left;
-}
-.grid-item select{
-    width: 200px;
-    border: none;
-    border-bottom: 2px solid #808080 !important;
-}
-.grid-item input[type=text]{
-    width: 200px;
-    height: 35px;
-    background-color: white !important;
-    border-bottom: 2px solid #808080 !important;
-}
-.grid-item input[type=email]{
-    border: none;
-        width: 200px;
-    height: 35px;
-    background-color: white !important;
-    border-bottom: 2px solid #808080 !important;
-}
-.grid-item input[type=tel]{
-    border: none;
-        width: 200px;
-    height: 35px;
-    background-color: white !important;
-    border-bottom: 2px solid #808080 !important;
-}
-.grid-item input[type=password]{
-        width: 200px;
-    height: 35px;
-    background-color: white !important;
-    border-bottom: 2px solid #808080 !important;
-}
-.grid-item input[type=date]{
-    border: none;
-        width: 200px;
-    height: 35px;
-    background-color: white !important;
-    border-bottom: 2px solid #808080 !important;
 }
 #register-client{
     display: none;
@@ -127,67 +36,7 @@ footer{
 .container {
     position: relative;
 }
-#logbutton,#join{
-    background-color: rgb(47,52,51);
-    color: white;
-    font-size: 16px;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-}
-
-#registerbtn{
-    background-color: rgb(40,40,40);
-    color: white;
-    font-size: 18px;
-    padding: 10px 20px;
-    border: none;
-    display: grid;
-}
-#registerbtn:hover{
-    color:black;
-     background-color: rgb(218,32,62);
-}
-#logbutton:hover{
-    background-color: white;
-    color: black;
-}
-#join:hover{
-    background-color: rgb(218,32,62);
-    color:black;
-}
-.image {
-    width: 100%;
-    height: auto;
-    width: 100px;
-    height: 200px;
-    opacity: 1;
-    display: block;
-    /*max-width: 100%;*/
-    transition: .5s ease;
-    backface-visibility: hidden;
-}
-#roww{
-    margin-top: -7em;
-}
-.middle {
-  transition: .5s ease;
-  opacity: 0;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  text-align: center;
-}
-
-.container:hover .image {
-  opacity: 0.3;
-}
-
-.container:hover .middle {
-  opacity: 1;
-}
+.error {color: #FF0000;}
 
 #loginbtn {
    background-color: rgb(40,40,40);
@@ -200,12 +49,25 @@ footer{
     color:black;
     opacity: 0.3;
 }
-#xx{
-    max-width: 100%;
+.w3-teal, .w3-hover-teal:hover{
+    height:40px;
+    margin-top:100px;
+    background-color: #0e2f44 !important; 
+}
+#add-form{
+    height:240px;
+    color:black;
+    text-align: left;
+  
+    
 }
 
-.row{
-    display: block;
+#add input[type=text]{
+    float:right;
+}
+
+#add select{
+    float:right;
 }
 body {
   font-family: 'Cabin Regular', 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
@@ -272,6 +134,22 @@ a {
         background-color: rgb(128,128,128) !important; 
      
 }
+.highlight { background-color: #868e96; }
+
+tr:hover {
+    background-color: grey;
+    
+} 
+table{
+    width:900px;
+    height: auto;
+}
+
+th, td {
+    border-bottom: 1px solid #ddd;
+    padding-left: 15px;
+    text-align: center;
+}
   #mainNav .navbar-toggler {
     font-size: 14px !important;
     padding: 11px !important;
@@ -309,17 +187,8 @@ a {
       border-bottom: none !important;
         background-color: rgb(128,128,128) !important; 
       }
-      #mainNav.navbar-shrink {
-        padding-top: 10px !important;
-        padding-bottom: 10px !important;
-        background-color: rgb(128,128,128) !important; 
-      }
-      #mainNav .nav-link.active {
-        outline: none !important;
-        background-color: black !important;
-      }
-        #mainNav .nav-link.active:hover {
-          color: white !important;
+      #mainNav .navbar-nav a:hover{
+            background-color: black;
       }
 }
 
@@ -358,16 +227,6 @@ background-color: #282828 !important;
       }
 }
 
-
-.content-section {
-  padding-top: 150px;
-  padding-bottom: 150px;
-  color: white;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-}
 .about-section {
   padding-top: 150px;
   padding-bottom: 150px;
@@ -414,34 +273,30 @@ border-radius: 2px;
 
 
 }
-
-ul.banner-social-buttons {
-  margin-top: 0; }
-  @media (max-width: 1199px) {
-    ul.banner-social-buttons {
-      margin-top: 15px; 
-      }
+#policyform,#user{
+    background-color: rgba(250,250,250,0.3) ;
+    width: 300px;
+    height: 400px;
+    font-size:15px;
+    text-align:justify;
+    
+    
+    
 }
-  @media (max-width: 767px) {
-    ul.banner-social-buttons li {
-      display: block;
-      margin-bottom: 20px;
-      padding: 0; }
-      ul.banner-social-buttons li:last-child {
-        margin-bottom: 0; 
-      }
+#bitsform{
+    background-color: rgba(250,250,250,0.3) ;
+    width: 1000px;
+    height: 200px;
+    font-size:15px;
+   
+    
+    
 }
-
-::-moz-selection {
-  background: #fcfcfc;
-  background: rgba(255, 255, 255, 0.2);
-  text-shadow: none;
-}
-
-::selection {
-  background: #fcfcfc;
-  background: rgba(255, 255, 255, 0.2);
-  text-shadow: none;
+#policyform p{
+    font-size:13px;
+    text-align:justify;
+    
+    
 }
 .register .input-group{
     width:250px;

@@ -9,7 +9,7 @@ require_once('includes/config.php');
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>The Fitness Club</title>
+    <title>Ad Server platform</title>
       <!--modal-css--->        
       <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
       
@@ -25,7 +25,7 @@ require_once('includes/config.php');
       <!-- Custom styles for this template -->
     <link href="css/grayscale.min.css" rel="stylesheet">
       <link href="css/grayscale.css" rel="stylesheet">
-  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>    
+   
   </head>
   <body id="page-top">   
     <!-- Navigation -->
@@ -41,11 +41,15 @@ require_once('includes/config.php');
             <li class="nav-item">
               <a class="nav-link js-scroll-trigger" href="#page-top"><i class="fa fa-home"></i> Home</a>
             </li> 
+              
             <li class="nav-item">
               <a class="nav-link js-scroll-trigger" href="#about"><i class="fa fa-info"></i> About us</a>
             </li>    
                <li class="nav-item">
                    <a class="nav-link js-scroll-trigger" href="#contact"><i class="fa fa-phone"></i> Contact us</a>
+            </li>
+               <li class="nav-item">
+                   <a class="nav-link js-scroll-trigger" href="register.php">Register</a>
             </li>
           </ul>
         </div>
@@ -61,7 +65,7 @@ require_once('includes/config.php');
                   <center>
                   <div class="container" style="padding-bottom:1%;">
                     <div class="omb_login" id="homepage-form">
-                        <h3 class="omb_authTitle">Login or <a href="register.php" value="Register" style="text-decoration:underline">Join us</a></h3>
+                        <h3 class="omb_authTitle">Login</h3>
                         <div class="row omb_row-sm-offset-3 omb_socialButtons" style="text-align:center;display:inline">
                         </div>
                                 <form class="omb_loginForm" action="" autocomplete="off" method="POST">
@@ -79,6 +83,7 @@ require_once('includes/config.php');
                                     </div>
                                     <br>
                                     <button  id ="loginbtn" class="btn btn-default" name="submit" type="submit">Login</button>
+                                    <br>
                                     <br>
                                 </form>
                          <?php		
@@ -98,18 +103,17 @@ require_once('includes/config.php');
                                        $stmt->bindParam(':usernameAdmin',$usernameAdmin);
                                        $stmt->execute();				 
 				                        while($result=$stmt->fetch(PDO::FETCH_ASSOC)){
-                                            $_SESSION['id']=$result["adminID"];
+                                            $_SESSION['adminID']=$result["adminID"];
                                         }
                                   	header('Location: memberpage.php');
-                                   exit;
                                    }
                                    else{
-                                       echo '<p class="alert alert-danger" style="font-size:14px;"><i class="material-icons" style="font-size:20px;color:red">error</i>.hereYou are username or password is incorrect"</p>'; 
-                                   exit;
+                                        echo '<p class="alert alert-danger" style="width:350px; height:auto;font-size:15px;"><i class="material-icons" style="margin-right:1%;font-size:18px;color:red">error</i>&nbsp;You are username or password is incorrect</p>'; 
+                                      
                                    }
                                 }else {
-                                    echo '<p class="alert alert-danger" style="font-size:14px;"><i class="material-icons" style="font-size:20px;color:red">error</i>.You are username or password is incorrect"</p>'; 
-                                    exit;
+                                    echo '<p class="alert alert-danger" style="width:350px; height:auto;font-size:15px;"><i class="material-icons" style="margin-right:1%;font-size:18px;color:red">error</i>&nbsp;You are username or password is incorrect</p>'; 
+                               
                                  }
                              }
                             
@@ -184,17 +188,6 @@ require_once('includes/config.php');
             <p>&copy;The AdServer platform 2018</p>
         </div>
     </footer>
-
-    <!-- Bootstrap core JavaScript -->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Plugin JavaScript -->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <!-- Custom scripts for this template -->
-    <script src="js/grayscale.min.js"></script>
-
   </body>
 
 </html>

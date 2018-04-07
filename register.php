@@ -32,7 +32,7 @@ require_once('includes/config.php');
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
       <div class="container">
-          <a class="navbar-brand js-scroll-trigger" href="#index.phppage-top"><img src="images/logo.png" style="width:150px; margin-bottom:10px;"></a>
+          <a class="navbar-brand js-scroll-trigger" href="#index.php"><img src="images/logo.png" style="width:150px; margin-bottom:10px;"></a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           Menu
           <i class="fa fa-bars"></i>
@@ -40,7 +40,7 @@ require_once('includes/config.php');
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" href="index.php#page-top"><i class="fa fa-home"></i> Home</a>
+              <a class="nav-link js-scroll-trigger" href="index.php"><i class="fa fa-home"></i> Home</a>
             </li> 
             <li class="nav-item">
               <a class="nav-link js-scroll-trigger" href="index.php#about"><i class="fa fa-info"></i> About us</a>
@@ -61,7 +61,7 @@ require_once('includes/config.php');
             <div id="form" class="col-lg-8 mx-auto" style="top:100px;">
                   <center>
                   <div class="container" style="padding-bottom:1%;">
-                    <div class="omb_login" id="homepage-form" style="height:360px;">
+                    <div class="omb_login" id="homepage-form" style="height:auto">
                         <h3 class="omb_authTitle">Register</h3>
                                 <form class="omb_loginForm" action="" autocomplete="off" method="POST">
                                     <div class="register">
@@ -71,8 +71,8 @@ require_once('includes/config.php');
                                     </div>
                                     <br>
                                      <div class="input-group">
-                                        <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-                                        <input  type="text" class="form-control" name="email" placeholder="email" required>
+                                        <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+                                        <input  type="email" class="form-control" name="email" placeholder="email" required>
                                         
                                     </div>
                                     <br>
@@ -90,7 +90,7 @@ require_once('includes/config.php');
                                    </div>
                                     <br>
                                     <input  id ="loginbtn" name="submit" class="btn btn-default" type="submit" value="Register">
-                              
+                                    <br>
                                     <br>
                                 </form>
                             <?php		
@@ -99,14 +99,23 @@ require_once('includes/config.php');
                                 $usernameAdmin=$_POST['username'];
                                 $passwordAdmin=$_POST['password'];
                                 $confpassword=$_POST['confirm_pass'];
+                                $email=$_POST['email'];
+                                $stmt = $db->prepare('SELECT email FROM admins WHERE email = :email');
+                                $stmt->execute(array(':email' => $email));
+                                $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
                                 if($passwordAdmin!==$confpassword){
-                                    echo '<p class="alert alert-danger" style="font-size:14px;"><i class="material-icons" style="font-size:20px;color:red">error</i>."Confirm password does not match with password"</p>';
+                                        echo '<p class="alert alert-danger" style="width:350px; height:auto;font-size:15px;"><i class="material-icons" style="margin-right:1%;font-size:18px;color:red">error</i>&nbsp;Confirm password does not match with password</p>'; 
+                                       
                                 }
-
                                 else if(strlen($passwordAdmin) < 4){
-			                     echo '<p class="alert alert-danger" style="font-size:14px;"><i class="material-icons" style="font-size:20px;color:red">error</i>."Password is too short"</p>';
+                                        echo '<p class="alert alert-danger" style="width:350px; height:auto;font-size:15px;"><i class="material-icons" style="margin-right:1%;font-size:18px;color:red">error</i>&nbsp;Password is too short</p>'; 
+                                     
 		                          }
+                                else if(!empty($row['email'])){
+                                    echo '<p class="alert alert-danger" style="width:350px; height:auto;font-size:15px;"><i class="material-icons" style="margin-right:1%;font-size:18px;color:red">error</i>&nbsp;Email provided is already in use</p>'; 
+			
+                                }
                                 else{
                                 $stmt = $db->prepare('SELECT usernameAdmin FROM admins WHERE usernameAdmin = :usernameAdmin');
                                 $stmt->execute(array(':usernameAdmin' => $usernameAdmin));
@@ -114,16 +123,17 @@ require_once('includes/config.php');
                                     
                                if(empty($row['usernameAdmin'])){
                                         //insert into database with a prepared statement
-				                    $stmt = $db->prepare('INSERT INTO admins (usernameAdmin,passwordAdmin) VALUES (:usernameAdmin, :passwordAdmin)');
+				                    $stmt = $db->prepare('INSERT INTO admins (usernameAdmin,passwordAdmin,email) VALUES (:usernameAdmin, :passwordAdmin, :email)');
 				                    $stmt->execute(array(
 					               ':usernameAdmin' => $usernameAdmin,
-					               ':passwordAdmin' => $passwordAdmin,));
-                                   $id = $db->lastInsertId('adminID');
-                                   echo '<p> You have succesfully sign up</p>';
-                                   exit;
+					               ':passwordAdmin' => $passwordAdmin,
+                                   ':email' => $email,));
+                                  
+                                  echo '<p class="alert alert-success" style="width:350px; height:auto;font-size:15px;"><i class="material-icons" style="margin-right:1%;font-size:18px;color:green">error</i>&nbsp;Registration successful</p>'; 
+                                  
                                 }else {
-                                    echo '<p class="alert alert-danger" style="font-size:14px;"><i class="material-icons" style="font-size:20px;color:red">error</i>."Username already exists"</p>'; 
-                                   exit;
+                                        echo '<p class="alert alert-danger" style="width:350px; height:auto;font-size:15px;"><i class="material-icons" style="margin-right:1%;font-size:18px;color:red">error</i>&nbsp;Username already exists</p>'; 
+                                       
                                  }
                                 }
                             }
@@ -138,36 +148,6 @@ require_once('includes/config.php');
         </div>                
       </div>    
     </header>
-
-    <!-- About Section -->
-    <section id="about" class="about-section  text-center">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-8 mx-auto about">
-            <h2>About The AdServer platform</h2>
-            <p>"The Ad Server" is a platform that lets you lafklafkfo</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="contact-section text-center">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-8 mx-auto" style="color:black">
-            <h2>Contact Us</h2>
-             <div id="social">
-                    <a href="" class="fa fa-facebook"></a>
-                    <a href="" class="fa fa-twitter"></a>
-                    <a href="" class="fa fa-instagram"></a>	
-              </div>
-          </div>
-        </div>
-      </div>
-    </section>
-      
-    <!-- Footer -->
     <footer >
         <center><div id="footer">
             <div style="display:inline">
