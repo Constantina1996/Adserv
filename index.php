@@ -139,7 +139,15 @@ require_once('includes/config.php');
         <div class="row">
           <div class="col-lg-8 mx-auto about">
             <h2>About The AdServer platform</h2>
-            <p>"The Ad Server" is a platform that lets you lafklafkfo</p>
+            <p>"The Ad Server" is a platform that lets you experiment with a variety of advertisements.
+                Specifically, it lets you bidding at the moment like an advertiser,by giving you the
+                opportunity to delete any ad that is going for bidding or add any ad. Also, it gives you 
+                the opportunity to edit the virtual user who may be visiting the web at the moment.  
+                As well, it lets you to choose what policy the publisher(owner of the website) would 
+                wanted to have. Specifically there are publishers that want to show advertisements with high price
+                and there are publishers that want to show advertisements personalized on user.
+            </p>
+              <img style="width:450px;"src="images/bids.jpg" alt="bids"/>
           </div>
         </div>
       </div>
@@ -149,12 +157,16 @@ require_once('includes/config.php');
     <section id="contact" class="contact-section text-center">
       <div class="container">
         <div class="row">
-          <div class="col-lg-8 mx-auto" style="color:black">
-            <h2>Contact Us</h2>
+          <div class="col-lg-8 mx-auto">
+            <h3>Contact Us</h3>
              <div id="social">
-                    <a href="" class="fa fa-facebook"></a>
+              <i class="fa fa-phone">Tel   : +0035796537414  </i> <br><br>
+                 <i class="fa fa-envelope"> Email : ctseri02@gmail.com </i>  <br><br>
+                 <div id="social">
+                    <a href="https://www.facebook.com/kwtcCia" class="fa fa-facebook"></a>
                     <a href="" class="fa fa-twitter"></a>
-                    <a href="" class="fa fa-instagram"></a>	
+                    <a href="https://www.instagram.com/kwnstantina_tseriwtou/?hl=en" class="fa fa-instagram"></a>	
+			     </div>
               </div>
           </div>
         </div>
@@ -168,9 +180,9 @@ require_once('includes/config.php');
                 <a href="index.php#aboutus">About us</a><br>
                 <a href="index.php#contact">Contact us</a><br>
                 <div id="social">
-                    <a href="" class="fa fa-facebook"></a>
+                    <a href="https://www.facebook.com/kwtcCia" class="fa fa-facebook"></a>
                     <a href="" class="fa fa-twitter"></a>
-                    <a href="" class="fa fa-instagram"></a>	
+                    <a href="https://www.instagram.com/kwnstantina_tseriwtou/?hl=en" class="fa fa-instagram"></a>	
 			     </div>
             </div> 
             <div style="display:inline">

@@ -4,11 +4,11 @@
 $title = 'Memberpage';
 $back = 'logout.php';
 $textofback = 'Log out';
+$adminID=$_SESSION['adminID'];
 if(!isset($_SESSION['adminID'])){
     header('Location: index.php');
-}
+}                       
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -70,43 +70,20 @@ if(!isset($_SESSION['adminID'])){
     </nav>
 
 <!-- Intro Header -->
-    <header class="masthead" style="height:1200px">
+    <header class="masthead" style="height:1400px">
       <div class="intro-body">
           <center><h3 class="omb_authTitle">Welcome to AD SERVER platform</h3></center> 
-            <form action="" method="post">
-    <div class="container" style="column-count:2;">
-        <div id="policyform" class="container"> 
-             <h6 style="font-size:15px;">Choose a policy</h6>
-            
-            <label for="1"> Policy 1</label><br>
-                       <input type="radio" name="policy" value="1" id="1" class="radiobtn"  /><p style="display:inline;"> This policy prefers ads with user interests. The second priority is
-                        high price and the third priority is user geography</p><br>
-                    <label for="2"> Policy 2</label><br>
-                  <input type="radio" name="policy" value="2" id="2"  class="radiobtn"  /><p style="display:inline;"> This policy prefers ads with high price. The second priority is
-                            user interests and the third priority is user geography</p><br>
-                   <label for="3"> Policy 3</label><br>
-                 <input type="radio" name="policy" value="3" id="3" class="radiobtn" /><p style="display:inline;"> This policy prefers ads with user interests. The second priority is
-                            user geography and the third priority is high price</p>
-                    <br>
-            
-               </div>
-        <div id="user" class="container"> 
-            <h6 style="font-size:15px;">User</h6>
-            
-        </div>
-        </div>
-        <br>
-        <br>
-            <form id="editbids" action="" method="post">
-            <div id="bitsform" class="container"> 
-            <h6 style="font-size:15px;">Bids from advertisers</h6>
-                 <a style="float:right; padding:1%;" id="decisionbtn"  href="#deletebid" ><i style="font-size:20px;" class='fa fa-trash' aria-hidden="true"></i></a> 
-                <a style="float:right; padding:1%;" id="decisionbtn"  href="#editbid" onclick="document.getElementById('editbid').style.display='block'" ><i style="font-size:20px;" class='fa fa-edit' aria-hidden="true"></i></a> 
-                <a style="float:right; padding:1%;" id="decisionbtn" href="#addbid" onclick="document.getElementById('addbid').style.display='block'" ><abbr title="Add a bid"></abbr><i  style="font-size:20px;" class='fa fa-plus' aria-hidden="true"></i></a> 
+      
+         <div id="bitsform" class="container">    
+          <form action="" method="post">
+            <h6 style="padding-top:15px;font-size:15px;">Bids from advertisers</h6>
+              <button style="float:right; padding:1%;" type="submit" name="deletebid" href="#deletebid"> <i style="font-size:20px;" class='fa fa-trash' aria-hidden="true"></i></button>
+                <a style="float:right; padding:1%;" id="decisionbtn" href="#addbid" onclick="document.getElementById('addbid').style.display='block'" ><i  style="font-size:20px;" class='fa fa-plus' aria-hidden="true"></i></a> 
                        <table id="data">
                           <thead>
                               <tr>
-                                <th class="table-header">Id</th>
+                                
+                                <th class="table-header">&nbsp;&nbsp;&nbsp;Id</th>
                                 <th class="table-header">Topic</th>
                                 <th class="table-header">Price</th>
                                 <th class="table-header">Geography</th>
@@ -114,27 +91,32 @@ if(!isset($_SESSION['adminID'])){
                           </thead>
                           <tbody>
                           <?php
-                              $adminID=$_SESSION['adminID'];
-                           
+                            
                               $stmt = $db->prepare('SELECT * FROM bids WHERE adminID = :adminID');
                               $stmt->bindParam(':adminID',$adminID);
                               $stmt->execute();		
                         while($result=$stmt->fetch(PDO::FETCH_ASSOC)){
                          ?>  
-                              <tr onclick="select(this,'<?php echo $result['bidID'];?>');">    
+                              <tr id="bid">    
                                   
-                                <th><?php  
+                                
+                                
+                                <td id="bidID">
+                                    <input type="radio" name="bid" id="bid" value="<?php echo $result['bidID'];
+                                    ?>" required>
+                                    <?php
                                     echo $result['bidID'];
-                                    ?></th>
-                                <th><?php  
+                                    ?>
+                                </td>
+                                <td id="topic"><?php  
                                     echo $result['topic'];
-                                    ?></th>
-                                <th><?php  
+                                    ?></td>
+                                <td id="price"><?php  
                                     echo $result['price'];
-                                    ?></th>
-                                <th><?php  
+                                    ?></td>
+                                <td id="geography"><?php  
                                     echo $result['geography'];
-                                    ?></th> 
+                                    ?></td> 
                               </tr>                              
                         <?php
                              }
@@ -142,130 +124,570 @@ if(!isset($_SESSION['adminID'])){
                           </tbody>
                         </table>
                     <script>
-                      $("#data tr").click(function() {
+                      $("#data tbody tr").click(function() {
                       var selected = $(this).hasClass("highlight");
-                      $("#data tr").removeClass("highlight");
+                      $("#data tbody tr").removeClass("highlight");
                     if(!selected)
                     $(this).addClass("highlight");
                     });
                     </script>
-                </div>
-                <?php
-              
-                 if(isset($_POST['deletion'])){
-                            if(isset($_POST['bids'])){
-                                $bidID=$_POST['bids'];
-                                 $stmt = $db->prepare('Delete FROM bids WHERE adminID = :adminID AND bidID=:bidID');               $stmt->bindParam(':adminID',$adminID);
-                                $stmt->bindParam(':bidID',$bidID);
-                                $stmt->execute();
-			                     echo  "<script> window.location.href='memberpage.php';</script>";
-                                
-                            }
-                            else{
-                                 echo '<p class="alert alert-danger" style="width:350px; height:auto;font-size:15px;"><i class="material-icons" style="margin-right:1%;font-size:18px;color:red">error</i>&nbsp;You have to select a bid</p>'; 
-                            }
-                            
-                        }
-               ?>
-                </form>
+            
                 <br>
-                 <input style="background-color:#C0C0C0; color:black;" id="decisionbtn "class="btn btn-default" type="submit" name="submit" value="Submit"/>
-            </form>
+                <center> <p id="errorbid" class="alert alert-danger" style="display:none; width:250px; height:auto;font-size:15px;">You have to add a new bid</p></center> <br>
+             </form>   
+             </div>
+                
+                <?php
+                  if(isset($_POST['deletebid'])){
+                       $stmt = $db->prepare('SELECT * FROM bids WHERE adminID = :adminID');
+                       $stmt->bindParam(':adminID',$adminID);
+                       $stmt->execute();	                      
+                       $row = $stmt->fetch(PDO::FETCH_ASSOC);  	
+                      if(!$row)
+                          echo "<script>document.getElementById('errorbid').style.display='block';</script>";
+                      else{
+                                 $bidID=$_POST['bid'];
+                                 $stmt = $db->prepare('Delete FROM bids WHERE adminID = :adminID AND bidID=:bidID');               $stmt->bindParam(':adminID',$adminID);
+                                 $stmt->bindParam(':bidID',$bidID);
+                                 $stmt->execute();
+                                 $stmt = $db->prepare('SELECT bidcount FROM admins WHERE adminID=:adminID;');
+                                 $stmt->bindParam(':adminID', $adminID);
+                                 $stmt->execute();
+                                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                                 $bidcount=$result['bidcount'];
+                                 $bidcount--;
+                                 $stmt = $db->prepare('UPDATE admins SET bidcount=:bidcount WHERE adminID=:adminID;');
+                                 $stmt->bindParam(':adminID', $adminID);
+                                 $stmt->bindParam(':bidcount', $bidcount);
+                                 $stmt->execute();
+			                     echo  "<script> window.location.href='memberpage.php';</script>";
+                      }
+                }
+                ?>
+               <br>
+                <br>
+       <div id="user" class="container"> 
+            <form id="userform" action="" method="post">
+            
+                        <h6 style="padding-top:15px;font-size:15px;font-size:15px; text-align:center;">User</h6>
+                         <button style="float:right; padding:1%;" name="deleteuser" id="deleteuser" href="#deleteuser"><i  style="font-size:20px;" class='fa fa-trash' aria-hidden="true"></i></button>  
+                     <?php 
+                      $stmt = $db->prepare('SELECT * FROM users WHERE adminID = :adminID');
+                      $stmt->bindParam(':adminID',$adminID);
+                      $stmt->execute();	                      
+                      $row = $stmt->fetch(PDO::FETCH_ASSOC);  	
+                      if(!$row){
+                        ?>
+                        <a style="float:right; padding:1%;" id="decisionbtn" href="#adduser" onclick="document.getElementById('adduser').style.display='block'" ><i  style="font-size:20px;" class='fa fa-plus' aria-hidden="true"></i></a>
+                        <?php 
+                        }
+                        ?>
+                     <table id="data">
+                          <thead>
+                              <tr>
+                                <th class="table-header">Username</th>
+                                <th class="table-header">Gender</th>
+                                <th class="table-header">Keywords about Interests</th>
+                                <th class="table-header">Age</th>
+                                <th class="table-header">Geography</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                          <?php
+                              $stmt = $db->prepare('SELECT * FROM users WHERE adminID = :adminID');
+                              $stmt->bindParam(':adminID',$adminID);
+                              $stmt->execute();		
+                        while($result=$stmt->fetch(PDO::FETCH_ASSOC)){
+                         ?>  
+                    
+                              
+                        <tr id="users">    
+                           
+                                <td id="username">
+                                   <?php
+                                    echo $result['username'];
+                                   ?>
+                                </td>
+                                <td id="gender"><?php  
+                                    if($result['sex']=="O")
+                                    echo "Other";
+                                    else if($result['sex']=="M")
+                                    echo "Male";
+                                    else if($result['sex']=="F")
+                                    echo "Female";
+                                    else
+                                        echo "-"
+                                    ?></td>
+                                <td id="keywordsAboutInterests"><?php  
+                                    echo $result['keywordsAboutInterests'];
+                                    ?></td>
+                                <td id="age"><?php  
+                                    echo $result['age'];
+                                    ?></td>
+                                  <td id="geography"><?php  
+                                    echo $result['geo'];
+                                 ?></td> 
+                              </tr>                              
                         <?php
-                        
-                        if (isset($_POST['submit'])) {
+                             }
+                          ?>    
+                          </tbody>
+                        </table><br>
+                 <center> <p id="erroruser" class="alert alert-danger" style="display:none; width:250px; height:auto;font-size:15px;">You have to add a new user</p></center> <br>
+            
+                    </form>
+               </div>
+                <br>
+                <br>
+                  <?php
+              
+                  if(isset($_POST['deleteuser'])){
+                      $stmt = $db->prepare('SELECT * FROM users WHERE adminID = :adminID');
+                      $stmt->bindParam(':adminID',$adminID);
+                      $stmt->execute();	                      
+                      $row = $stmt->fetch(PDO::FETCH_ASSOC);  	
+                      if(!$row){
+                         echo "<script>document.getElementById('erroruser').style.display='block';</script>";
+                        } else {
+                       $stmt = $db->prepare('Delete FROM users WHERE adminID = :adminID');              
+                       $stmt->bindParam(':adminID',$adminID);
+                       $stmt->execute();
+                        echo  "<script> window.location.href='memberpage.php';</script>";
+                        }
+                  }
+                ?>
+             <div id="policyform" class="container"> 
+                 <form action="" method="post">
+                             <h6  style="padding-top:15px;font-size:15px;text-align:center;font-size:15px;">Choose a policy</h6>
 
-                            $stmt = $db->prepare('SELECT keywordsAboutInterests FROM users WHERE userID = :userID');
-                            $stmt->bindParam(':userID', $_SESSION['userID']);
+                            <label for="1"> Policy 1</label><br>
+                                       <input type="radio" name="policy" value="1" id="1" class="radiobtn"  /><p style="display:inline;font-size:15px;"> This policy prefers ads with user interests. The second priority is
+                                        high price and the third priority is user geography</p><br><br>
+                                    <label for="2"> Policy 2</label><br>
+                                  <input type="radio" name="policy" value="2" id="2"  class="radiobtn"  /><p style="display:inline;font-size:15px;"> This policy prefers ads with high price. The second priority is
+                                            user interests and the third priority is user geography</p><br><br>
+                                   <label for="3"> Policy 3</label><br>
+                                 <input type="radio" name="policy" value="3" id="3" class="radiobtn" /><p style="font-size:15px;display:inline;"> This policy prefers ads with user interests. The second priority is
+                                            user geography and the third priority is high price</p>
+                  <br>
+                    <br>
+             <center> <p id="errorpolicy" class="alert alert-danger" style="display:none; width:250px; height:auto;font-size:15px;">You have to select a policy</p></center> <br>
+                      <center> <p id="errorpolicy" class="alert alert-danger" style="display:none; width:250px; height:auto;font-size:15px;">You have to add at least one bid </p></center> <br>
+              <center>  <input style="background-color:#C0C0C0; color:black;" id="decisionbtn "class="btn btn-default" type="submit" name="submit" value="submit"/></center><br> 
+            </form>
+           </div>    
+              <?php 
+                 if(isset($_POST['submit'])) {
+                    if(isset($_POST['policy'])){
+                              $stmt = $db->prepare('SELECT * FROM bids WHERE adminID = :adminID');
+                               $stmt->bindParam(':adminID',$adminID);
+                               $stmt->execute();	                      
+                               $row = $stmt->fetch(PDO::FETCH_ASSOC);  	
+                              if(!$row)
+                                  echo "<script>document.getElementById('errorbid1').style.display='block';</script>";
+                             else{
+                            $stmt = $db->prepare('SELECT * FROM users WHERE adminID = :adminID');
+                            $stmt->bindParam(':adminID', $adminID);
                             $stmt->execute();
-                            $arr = array();
+                         
                             while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                                $str = $result["keywordsAboutInterests"];
+                                $age = $result["age"];
+                                $geo = $result["geo"];
+                                $sex = $result["sex"];
+                                $keywords=$result["keywordsAboutInterests"];
                             }
-                            $pieces = explode(" ", $str);
+                            //write interests in predicates.pl
+                            $pieces = explode(",", $keywords);
                             $my_file = './gorgias/decisionMaking/predicates.pl';
                             $handle = fopen($my_file, 'w') or die('Cannot open file:' . $my_file);
                             for ($i = 0; $i < count($pieces); $i++) {
                                 $fwrite = fwrite($handle, "interests(" . $pieces[$i] . ")");
                                 fwrite($handle, ".\n");
                             }
-                            $stmt = $db->prepare('SELECT * FROM users WHERE adminID = :adminID');
-                            $stmt->bindParam(':adminID', $_adminID);
-                            $stmt->execute();
-                            $arr = array();
-                            while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                                $age = $result["age"];
-                                $geo = $result["geo"];
-                                $sex = $result["sex"];
-                            }
-                            $blockedbypublisher = Array('1' => 0, '2' => 0, '3' => 0, '4' => 0,
-                                '5' => 0, '6' => 0, '7' => 0, '8' => 0,
-                                '9' => 0, '10' => 0);
-
-                            fwrite($handle, "adList([");
-                            for ($i = 1; $i <= 10; $i++) {
-                                if (!$blockedbypublisher[$i])
-                                    if ($i != 10)
-                                        fwrite($handle, $i . ",");
-                                    else
-                                        fwrite($handle, $i);
-                            }
-                            fwrite($handle, "]).");
-                            fwrite($handle, "\n");
+                           // write age and geography in predicates.pl
+                            
                             fwrite($handle, "age(");
                             $fwrite = fwrite($handle, $age);
                             fwrite($handle, ").\ngeography(");
                             $fwrite = fwrite($handle, $geo);
                             fwrite($handle, ").\n");
 
-                            if (isset($_POST['policy'])) {
-                                if ($_POST['policy'] == 1) {
+                           //write policy in predicates.pl
+                                if ($_POST['policy'] == 1) 
                                     $fwrite = fwrite($handle, "policy(1)");
-                                } else if ($_POST['policy'] == 2) {
+                                 else if ($_POST['policy'] == 2) 
                                     $fwrite = fwrite($handle, "policy(2)");
-                                } else if ($_POST['policy'] == 3) {
+                                 else if ($_POST['policy'] == 3) 
                                     $fwrite = fwrite($handle, "policy(3)");
-                                }
+                                
                                 fwrite($handle, ".\n");
-                            } else
-                                echo '<p class="alert-danger">' . "You have to select a policy" . '</p>';
+                         
 
 
                             if ($sex == "F")
-                                $fwrite = fwrite($handle, "sex(female)");
+                                $fwrite = fwrite($handle, "sex(F)");
+                            else if($sex == "M")
+                                $fwrite = fwrite($handle, "sex(M)");
                             else
-                                $fwrite = fwrite($handle, "sex(male)");
+                                  $fwrite = fwrite($handle, "sex(O)");
                             fwrite($handle, ".\n");
+                                 $stmt = $db->prepare('SELECT bidcount FROM admins WHERE adminID = :adminID');
+                               $stmt->bindParam(':adminID',$adminID);
+                               $stmt->execute();	                      
+                                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                                 $bidcount=$result['bidcount'];
+                                 
+                               $stmt = $db->prepare('SELECT bidID FROM bids WHERE adminID = :adminID');
+                               $stmt->bindParam(':adminID',$adminID);
+                               $stmt->execute();	                      
+                                $i=1;
+                        fwrite($handle, "adList([");
+                            while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                    if($i!=$bidcount)
+                                        fwrite($handle, $result['bidID'] . ",");
+                                    else
+                                         fwrite($handle, $result['bidID']);
+                                $i++;
+                               
+                            }
+                        fwrite($handle,"");
+                        fwrite($handle,"]).");
+                           $my_file2 = './gorgias/decisionMaking/bids.pl';
+                            $handle2 = fopen($my_file2, 'w') or die('Cannot open file:' . $my_file2);
+                               $stmt = $db->prepare('SELECT * FROM bids WHERE adminID = :adminID');
+                               $stmt->bindParam(':adminID',$adminID);
+                               $stmt->execute();	                      
+                               while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                   $fwrite = fwrite($handle2, "ad(".$result["bidID"].",".$result['topic'].",".$result['price'].",".$result['geography'].").");
+                                    $fwrite = fwrite($handle2, "\n");
+                               }
 
-
-                            // for bits execute 
-
-                            if (isset($_POST['policy'])) {
-                                for ($i = 1; $i <= 10; $i++) {
+                            $stmt = $db->prepare('SELECT * FROM bids WHERE adminID = :adminID');
+                               $stmt->bindParam(':adminID',$adminID);
+                               $stmt->execute();	                      
+                              
+                               while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
                                     $secfil = 'executeGorgias.pl';
                                     $handle = fopen($secfil, 'w') or die('Cannot open file:' . $secfil);
                                     fwrite($handle, ":-consult('./gorgias/decisionMaking/adDecision.pl').");
                                     fwrite($handle, "\n");
-                                    fwrite($handle, "askGorgias:-prove([show(ad,$i)],Delta).");
+                                    fwrite($handle, "askGorgias:-prove([show(ad,".$result['bidID'].")],Delta).");
                                     fwrite($handle, "\n");
                                     fwrite($handle, 'askGorgias:-write("false").');
-                                    $cmd = "C:\\xampp\htdocs\AdServ\swipl\bin\swipl.exe -f executeGorgias.pl -g askGorgias,halt";
+                                    $cmd = "C:\\xampp\htdocs\AdServer\swipl\bin\swipl.exe -f executeGorgias.pl -g askGorgias,halt";
                                     $output = shell_exec(escapeshellcmd($cmd));
                                     if ($output != "false") {
-                                        echo "<p>SHOW AD $i</p>";
+                                        echo "<p>SHOW AD ".$result['bidID']."</p>";
                                         echo "</br>";
                                     }
                                 }
-                            }
+                           }
                         }
-                        ?>
-                    </div>
+                else{
+                    echo "<script>document.getElementById('errorpolicy').style.display='block';</script>";
+                    
+                }
+            }
+            ?>
         
-                    <div id="addbid"  class="w3-modal"  href="https://www.w3schools.com/w3css/4/w3.css">
+         </div>     
+        <div id="adduser"  class="w3-modal"  href="https://www.w3schools.com/w3css/4/w3.css">
+                        <div class="w3-modal-content w3-animate-zoom" style="max-width:400px; height:380px;">
+                            <div class="w3-container w3-teal">
+                                <span style="height:40px; padding-bottom:1%" onclick="document.getElementById('adduser').style.display='none'" class="w3-button w3-display-topright w3-large">x</span>
+                                <h3 style="margin-top:2%;">Add a user!</h3>
+                            </div>
+                         
+                            <div class="container">                
+                                <form method="post" action="" id="add-form" >
+                               
+                                  <br>
+                                      <div id="add"> <label for="username">Username</label><input type="text"  style="border-bottom: 2px solid #808080 !important;" name="username" placeholder="Nicole" ></div>
+                                    <br>
+                                    <div id="add"><label for="gender">Gender</label>
+                                        <div style="float:right;padding-left:3%;"><input name="gender" type="radio" value="F"><label  style="padding-left:2%">Female</label></div><div style="float:right;padding-left:3%;"><input  name="gender" type="radio" value="M"><label  style="padding-left:2%"> Male </label></div><div style="float:right;padding-left:3%;"><input name="gender" type="radio" value="O"><label  style="padding-left:2%"> Other </label></div></div>
+                                    <br>
+                                    <div id="add"> <label for="keywords">Keywords About Interests</label><input type="text" name="keywords" placeholder="e.g. food,news" style="border-bottom: 2px solid #808080 !important;" > </div>
+                                    <br>
+                                    <div id="add"><label for="age">Age</label>
+                                      <input type="text" name="age" placeholder="e.g 20" style="border-bottom: 2px solid #808080 !important;" ></div>
+                                    <br>
+                                   <div id="add"> <label for="geography" >Geography</label>
+                                      <select name='country' class='dropdown' style="width:182px; height:25px; color:black;">
+                                        <option value="Afghanistan">Afghanistan</option>
+                                        <option value="Albania">Albania</option>
+                                        <option value="Algeria">Algeria</option>
+                                        <option value="American Samoa">American Samoa</option>
+                                        <option value="Andorra">Andorra</option>
+                                        <option value="Angola">Angola</option>
+                                        <option value="Anguilla">Anguilla</option>
+                                        <option value="Antartica">Antarctica</option>
+                                        <option value="Antigua and Barbuda">Antigua and Barbuda</option>
+                                        <option value="Argentina">Argentina</option>
+                                        <option value="Armenia">Armenia</option>
+                                        <option value="Aruba">Aruba</option>
+                                        <option value="Australia">Australia</option>
+                                        <option value="Austria">Austria</option>
+                                        <option value="Azerbaijan">Azerbaijan</option>
+                                        <option value="Bahamas">Bahamas</option>
+                                        <option value="Bahrain">Bahrain</option>
+                                        <option value="Bangladesh">Bangladesh</option>
+                                        <option value="Barbados">Barbados</option>
+                                        <option value="Belarus">Belarus</option>
+                                        <option value="Belgium">Belgium</option>
+                                        <option value="Belize">Belize</option>
+                                        <option value="Benin">Benin</option>
+                                        <option value="Bermuda">Bermuda</option>
+                                        <option value="Bhutan">Bhutan</option>
+                                        <option value="Bolivia">Bolivia</option>
+                                        <option value="Bosnia and Herzegowina">Bosnia and Herzegowina</option>
+                                        <option value="Botswana">Botswana</option>
+                                        <option value="Bouvet Island">Bouvet Island</option>
+                                        <option value="Brazil">Brazil</option>
+                                        <option value="British Indian Ocean Territory">British Indian Ocean Territory</option>
+                                        <option value="Brunei Darussalam">Brunei Darussalam</option>
+                                        <option value="Bulgaria">Bulgaria</option>
+                                        <option value="Burkina Faso">Burkina Faso</option>
+                                        <option value="Burundi">Burundi</option>
+                                        <option value="Cambodia">Cambodia</option>
+                                        <option value="Cameroon">Cameroon</option>
+                                        <option value="Canada">Canada</option>
+                                        <option value="Cape Verde">Cape Verde</option>
+                                        <option value="Cayman Islands">Cayman Islands</option>
+                                        <option value="Central African Republic">Central African Republic</option>
+                                        <option value="Chad">Chad</option>
+                                        <option value="Chile">Chile</option>
+                                        <option value="China">China</option>
+                                        <option value="Christmas Island">Christmas Island</option>
+                                        <option value="Cocos Islands">Cocos (Keeling) Islands</option>
+                                        <option value="Colombia">Colombia</option>
+                                        <option value="Comoros">Comoros</option>
+                                        <option value="Congo">Congo</option>
+                                        <option value="Congo">Congo, the Democratic Republic of the</option>
+                                        <option value="Cook Islands">Cook Islands</option>
+                                        <option value="Costa Rica">Costa Rica</option>
+                                        <option value="Cota D'Ivoire">Cote d'Ivoire</option>
+                                        <option value="Croatia">Croatia (Hrvatska)</option>
+                                        <option value="Cuba">Cuba</option>
+                                        <option value="Cyprus" selected>Cyprus</option>
+                                        <option value="Czech Republic">Czech Republic</option>
+                                        <option value="Denmark">Denmark</option>
+                                        <option value="Djibouti">Djibouti</option>
+                                        <option value="Dominica">Dominica</option>
+                                        <option value="Dominican Republic">Dominican Republic</option>
+                                        <option value="East Timor">East Timor</option>
+                                        <option value="Ecuador">Ecuador</option>
+                                        <option value="Egypt">Egypt</option>
+                                        <option value="El Salvador">El Salvador</option>
+                                        <option value="Equatorial Guinea">Equatorial Guinea</option>
+                                        <option value="Eritrea">Eritrea</option>
+                                        <option value="Estonia">Estonia</option>
+                                        <option value="Ethiopia">Ethiopia</option>
+                                        <option value="Falkland Islands">Falkland Islands (Malvinas)</option>
+                                        <option value="Faroe Islands">Faroe Islands</option>
+                                        <option value="Fiji">Fiji</option>
+                                        <option value="Finland">Finland</option>
+                                        <option value="France">France</option>
+                                        <option value="France Metropolitan">France, Metropolitan</option>
+                                        <option value="French Guiana">French Guiana</option>
+                                        <option value="French Polynesia">French Polynesia</option>
+                                        <option value="French Southern Territories">French Southern Territories</option>
+                                        <option value="Gabon">Gabon</option>
+                                        <option value="Gambia">Gambia</option>
+                                        <option value="Georgia">Georgia</option>
+                                        <option value="Germany">Germany</option>
+                                        <option value="Ghana">Ghana</option>
+                                        <option value="Gibraltar">Gibraltar</option>
+                                        <option value="Greece">Greece</option>
+                                        <option value="Greenland">Greenland</option>
+                                        <option value="Grenada">Grenada</option>
+                                        <option value="Guadeloupe">Guadeloupe</option>
+                                        <option value="Guam">Guam</option>
+                                        <option value="Guatemala">Guatemala</option>
+                                        <option value="Guinea">Guinea</option>
+                                        <option value="Guinea-Bissau">Guinea-Bissau</option>
+                                        <option value="Guyana">Guyana</option>
+                                        <option value="Haiti">Haiti</option>
+                                        <option value="Heard and McDonald Islands">Heard and Mc Donald Islands</option>
+                                        <option value="Holy See">Holy See (Vatican City State)</option>
+                                        <option value="Honduras">Honduras</option>
+                                        <option value="Hong Kong">Hong Kong</option>
+                                        <option value="Hungary">Hungary</option>
+                                        <option value="Iceland">Iceland</option>
+                                        <option value="India">India</option>
+                                        <option value="Indonesia">Indonesia</option>
+                                        <option value="Iran">Iran (Islamic Republic of)</option>
+                                        <option value="Iraq">Iraq</option>
+                                        <option value="Ireland">Ireland</option>
+                                        <option value="Israel">Israel</option>
+                                        <option value="Italy">Italy</option>
+                                        <option value="Jamaica">Jamaica</option>
+                                        <option value="Japan">Japan</option>
+                                        <option value="Jordan">Jordan</option>
+                                        <option value="Kazakhstan">Kazakhstan</option>
+                                        <option value="Kenya">Kenya</option>
+                                        <option value="Kiribati">Kiribati</option>
+                                        <option value="Democratic People's Republic of Korea">Korea, Democratic People's Republic of</option>
+                                        <option value="Korea">Korea, Republic of</option>
+                                        <option value="Kuwait">Kuwait</option>
+                                        <option value="Kyrgyzstan">Kyrgyzstan</option>
+                                        <option value="Lao">Lao People's Democratic Republic</option>
+                                        <option value="Latvia">Latvia</option>
+                                        <option value="Lebanon">Lebanon</option>
+                                        <option value="Lesotho">Lesotho</option>
+                                        <option value="Liberia">Liberia</option>
+                                        <option value="Libyan Arab Jamahiriya">Libyan Arab Jamahiriya</option>
+                                        <option value="Liechtenstein">Liechtenstein</option>
+                                        <option value="Lithuania">Lithuania</option>
+                                        <option value="Luxembourg">Luxembourg</option>
+                                        <option value="Macau">Macau</option>
+                                        <option value="Macedonia">Macedonia, The Former Yugoslav Republic of</option>
+                                        <option value="Madagascar">Madagascar</option>
+                                        <option value="Malawi">Malawi</option>
+                                        <option value="Malaysia">Malaysia</option>
+                                        <option value="Maldives">Maldives</option>
+                                        <option value="Mali">Mali</option>
+                                        <option value="Malta">Malta</option>
+                                        <option value="Marshall Islands">Marshall Islands</option>
+                                        <option value="Martinique">Martinique</option>
+                                        <option value="Mauritania">Mauritania</option>
+                                        <option value="Mauritius">Mauritius</option>
+                                        <option value="Mayotte">Mayotte</option>
+                                        <option value="Mexico">Mexico</option>
+                                        <option value="Micronesia">Micronesia, Federated States of</option>
+                                        <option value="Moldova">Moldova, Republic of</option>
+                                        <option value="Monaco">Monaco</option>
+                                        <option value="Mongolia">Mongolia</option>
+                                        <option value="Montserrat">Montserrat</option>
+                                        <option value="Morocco">Morocco</option>
+                                        <option value="Mozambique">Mozambique</option>
+                                        <option value="Myanmar">Myanmar</option>
+                                        <option value="Namibia">Namibia</option>
+                                        <option value="Nauru">Nauru</option>
+                                        <option value="Nepal">Nepal</option>
+                                        <option value="Netherlands">Netherlands</option>
+                                        <option value="Netherlands Antilles">Netherlands Antilles</option>
+                                        <option value="New Caledonia">New Caledonia</option>
+                                        <option value="New Zealand">New Zealand</option>
+                                        <option value="Nicaragua">Nicaragua</option>
+                                        <option value="Niger">Niger</option>
+                                        <option value="Nigeria">Nigeria</option>
+                                        <option value="Niue">Niue</option>
+                                        <option value="Norfolk Island">Norfolk Island</option>
+                                        <option value="Northern Mariana Islands">Northern Mariana Islands</option>
+                                        <option value="Norway">Norway</option>
+                                        <option value="Oman">Oman</option>
+                                        <option value="Pakistan">Pakistan</option>
+                                        <option value="Palau">Palau</option>
+                                        <option value="Panama">Panama</option>
+                                        <option value="Papua New Guinea">Papua New Guinea</option>
+                                        <option value="Paraguay">Paraguay</option>
+                                        <option value="Peru">Peru</option>
+                                        <option value="Philippines">Philippines</option>
+                                        <option value="Pitcairn">Pitcairn</option>
+                                        <option value="Poland">Poland</option>
+                                        <option value="Portugal">Portugal</option>
+                                        <option value="Puerto Rico">Puerto Rico</option>
+                                        <option value="Qatar">Qatar</option>
+                                        <option value="Reunion">Reunion</option>
+                                        <option value="Romania">Romania</option>
+                                        <option value="Russia">Russian Federation</option>
+                                        <option value="Rwanda">Rwanda</option>
+                                        <option value="Saint Kitts and Nevis">Saint Kitts and Nevis</option> 
+                                        <option value="Saint LUCIA">Saint LUCIA</option>
+                                        <option value="Saint Vincent">Saint Vincent and the Grenadines</option>
+                                        <option value="Samoa">Samoa</option>
+                                        <option value="San Marino">San Marino</option>
+                                        <option value="Sao Tome and Principe">Sao Tome and Principe</option> 
+                                        <option value="Saudi Arabia">Saudi Arabia</option>
+                                        <option value="Senegal">Senegal</option>
+                                        <option value="Seychelles">Seychelles</option>
+                                        <option value="Sierra">Sierra Leone</option>
+                                        <option value="Singapore">Singapore</option>
+                                        <option value="Slovakia">Slovakia (Slovak Republic)</option>
+                                        <option value="Slovenia">Slovenia</option>
+                                        <option value="Solomon Islands">Solomon Islands</option>
+                                        <option value="Somalia">Somalia</option>
+                                        <option value="South Africa">South Africa</option>
+                                        <option value="South Georgia">South Georgia and the South Sandwich Islands</option>
+                                        <option value="Span">Spain</option>
+                                        <option value="SriLanka">Sri Lanka</option>
+                                        <option value="St. Helena">St. Helena</option>
+                                        <option value="St. Pierre and Miguelon">St. Pierre and Miquelon</option>
+                                        <option value="Sudan">Sudan</option>
+                                        <option value="Suriname">Suriname</option>
+                                        <option value="Svalbard">Svalbard and Jan Mayen Islands</option>
+                                        <option value="Swaziland">Swaziland</option>
+                                        <option value="Sweden">Sweden</option>
+                                        <option value="Switzerland">Switzerland</option>
+                                        <option value="Syria">Syrian Arab Republic</option>
+                                        <option value="Taiwan">Taiwan, Province of China</option>
+                                        <option value="Tajikistan">Tajikistan</option>
+                                        <option value="Tanzania">Tanzania, United Republic of</option>
+                                        <option value="Thailand">Thailand</option>
+                                        <option value="Togo">Togo</option>
+                                        <option value="Tokelau">Tokelau</option>
+                                        <option value="Tonga">Tonga</option>
+                                        <option value="Trinidad and Tobago">Trinidad and Tobago</option>
+                                        <option value="Tunisia">Tunisia</option>
+                                        <option value="Turkey">Turkey</option>
+                                        <option value="Turkmenistan">Turkmenistan</option>
+                                        <option value="Turks and Caicos">Turks and Caicos Islands</option>
+                                        <option value="Tuvalu">Tuvalu</option>
+                                        <option value="Uganda">Uganda</option>
+                                        <option value="Ukraine">Ukraine</option>
+                                        <option value="United Arab Emirates">United Arab Emirates</option>
+                                        <option value="United Kingdom">United Kingdom</option>
+                                        <option value="United States">United States</option>
+                                        <option value="United States Minor Outlying Islands">United States Minor Outlying Islands</option>
+                                        <option value="Uruguay">Uruguay</option>
+                                        <option value="Uzbekistan">Uzbekistan</option>
+                                        <option value="Vanuatu">Vanuatu</option>
+                                        <option value="Venezuela">Venezuela</option>
+                                        <option value="Vietnam">Viet Nam</option>
+                                        <option value="Virgin Islands (British)">Virgin Islands (British)</option>
+                                        <option value="Virgin Islands (U.S)">Virgin Islands (U.S.)</option>
+                                        <option value="Wallis and Futana Islands">Wallis and Futuna Islands</option>
+                                        <option value="Western Sahara">Western Sahara</option>
+                                        <option value="Yemen">Yemen</option>
+                                        <option value="Yugoslavia">Yugoslavia</option>
+                                        <option value="Zambia">Zambia</option>
+                                        <option value="Zimbabwe">Zimbabwe</option>
+                                          
+                                    </select>
+                                       
+                                   </div>
+                                    <br>
+                                    <center><input style="background-color: #0e2f44;" class="btn btn-default" name="addButton" id="loginbtn" type="submit" value="Add"></center>
+                                    <?php
+                                    if(isset($_POST['addButton'])){
+                                    $username=$_POST['username'];
+                                    $keywords=$_POST['keywords'];
+                                    $age=$_POST['age'];
+                                    $sex=$_POST['gender'];
+                                    $geo=$_POST['country'];
+                                     $stmt = $db->prepare('INSERT INTO users(adminID,username,keywordsAboutInterests,age,sex,geo)VALUES (:adminID,:username,:keywordsAboutInterests,:age,:sex,:geo)');
+                                     $stmt->execute(array(
+                                            ':adminID' => $adminID,
+                                            ':username' => $username,
+                                            ':keywordsAboutInterests' =>$keywords,
+                                            ':age' => $age,
+                                            ':sex' => $sex,
+                                            ':geo' => $geo
+                                        ));
+                                    echo "<script>
+                                        window.location.href='memberpage.php';</script>";
+                                    }
+                                    ?>
+                                </form>
+                              </div>
+                            </div>
+        </div>
+        <div id="addbid"  class="w3-modal"  href="https://www.w3schools.com/w3css/4/w3.css">
                         <div class="w3-modal-content w3-animate-zoom" style="max-width:330px;">
                             <div class="w3-container w3-teal">
                                 <span style="height:40px; padding-bottom:1%" onclick="document.getElementById('addbid').style.display='none'" class="w3-button w3-display-topright w3-large">x</span>
-                                <h3 style="margin-top:2%;">Add new bid!</h3>
+                                <h3 style="margin-top:2%;">Add a new bid!</h3>
                             </div>
                          
                             <div class="container">                
@@ -522,9 +944,9 @@ if(!isset($_SESSION['adminID'])){
                                        
                                    </div>
                                     <br>
-                                    <center><input style="background-color: #0e2f44;" class="btn btn-default" name="addButton" id="loginbtn" type="submit" value="Add"></center>
+                                    <center><input style="background-color: #0e2f44;" class="btn btn-default" name="add" id="loginbtn" type="submit" value="Add"></center>
                                     <?php
-                                    if(isset($_POST['addButton'])){
+                                    if(isset($_POST['add'])){
                                     $topic=$_POST['topic'];
                                     $price=$_POST['price'];
                                     $geography=$_POST['country'];
@@ -535,36 +957,36 @@ if(!isset($_SESSION['adminID'])){
                                             ':price' => $price,
                                             ':geography' =>$geography
                                         ));
-                                    echo "<script>
+                                       $stmt = $db->prepare('SELECT bidcount FROM admins WHERE adminID=:adminID;');
+                                       $stmt->bindParam(':adminID', $adminID);
+                                       $stmt->execute();
+                                       $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                                       $bidcount=$result['bidcount'];
+                                       $bidcount++;
+                                        $stmt = $db->prepare('UPDATE admins SET bidcount=:bidcount WHERE adminID=:adminID;');
+                                        $stmt->bindParam(':adminID', $adminID);
+                                        $stmt->bindParam(':bidcount', $bidcount);
+                                        $stmt->execute();
+                                        echo "<script>
                                         window.location.href='memberpage.php';</script>";
                                     }
                                     ?>
-                                    <script>
-											function displayVals() {
-											  var singleValues = $( "#username" ).val();
-											  if(singleValues=="mchatz05") 
-												  alert("Username already exists");
-											}
-											$("div #addbid input").change(displayVals);
-
-											displayVals();
-											</script>
                                 </form>
                               </div>
                             </div>
                         </div>
-                   
     </header>
+        
      <!-- Footer -->
-    <footer >
+    <footer>
         <center><div id="footer">
             <div style="display:inline">
                 <a href="index.php#aboutus">About us</a><br>
-                <a href="index.php#contact">Contact us</a><br>
                 <div id="social">
-                    <a href="" class="fa fa-facebook"></a>
+                    <h3 style="font-size:12px;color:black;">Contact us</h3>
+                    <a href="https://www.facebook.com/kwtcCia" class="fa fa-facebook"></a>
                     <a href="" class="fa fa-twitter"></a>
-                    <a href="" class="fa fa-instagram"></a>	
+                    <a href="https://www.instagram.com/kwnstantina_tseriwtou/?hl=en" class="fa fa-instagram"></a>	
 			     </div>
             </div> 
         </div>
