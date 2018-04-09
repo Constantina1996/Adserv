@@ -1,7 +1,7 @@
 :- compile('../lib/gorgias').
 :- compile('../ext/lpwnf').
 :- compile('./predicates.pl').
-:- compile('./bits.pl').
+:- compile('./bids.pl').
 :- dynamic check-price/1,match-interests/1,blockedbypublisher/1,match-geography/1,ad/4,sex/1,age/1,
                    geography/1,categorybysex/2,categorybyage/2,check-age/1,check-sex/1,policy/1,adList/1,adListUpdate/1,check/2.
 

@@ -64,10 +64,13 @@ footer{
 
 #add input[type=text]{
     float:right;
+   
 }
+
 
 #add select{
     float:right;
+
 }
 body {
   font-family: 'Cabin Regular', 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
@@ -96,17 +99,6 @@ h6 {
   text-transform: uppercase;
 }
 
-p {
-  font-size: 16px;
-  line-height: 1.5;
-  margin: 0 0 25px; }
-  @media (min-width: 768px) {
-    p {
-      font-size: 18px;
-      line-height: 1.6;
-      margin: 0 0 35px; 
-      }
-}
 
 a {
   -webkit-transition: all 0.2s ease-in-out;
@@ -119,6 +111,47 @@ a {
     color:  white; 
 }
 
+#bitsform button {
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+  color: #0e2f44;
+         background-color: transparent;
+    border: none;
+     padding:1%;
+    
+}
+  #bitsform button:focus, #bitsform button:hover {
+    text-decoration: none;
+    color:  white; 
+         background-color: transparent;
+          border: none;
+
+}
+
+#userform button {
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+  color: #0e2f44;
+         background-color: transparent;
+    border: none;
+     padding:1%;
+    
+}
+  #userform button:focus, #userform button:hover {
+    text-decoration: none;
+    color:  white; 
+         background-color: transparent;
+          border: none;
+
+}
+
+ #bitsform input[type=radio]{
+   float:left;
+margin-top:3%;
+
+}
 #footer a {
   color: black;
 }
@@ -141,6 +174,7 @@ tr:hover {
     
 } 
 table{
+    padding-top:-10px;
     width:900px;
     height: auto;
 }
@@ -232,22 +266,32 @@ background-color: #282828 !important;
   padding-bottom: 150px;
   color: black;
     width: 100%;
+  
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
   background-color:#282828;
 }
-.contact-section {
+
+#contact {
   padding-top: 150px;
   padding-bottom: 150px;
   color: white;
-        width: 100%;
-    background-color:#C0C0C0;
+    font-size:18px;
+   width: 100%;
+     background-color:#282828;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+}
+#contact a{
+    color:white;
+}
+
+#contact a:hover{
+    color:cadetblue;
 }
 
 #loginbtn {
@@ -273,25 +317,37 @@ border-radius: 2px;
 
 
 }
-#policyform,#user{
+#policyform{
+  
     background-color: rgba(250,250,250,0.3) ;
-    width: 300px;
+    width: 1000px;
+    height: auto;
+    font-size:15px;
+    text-align: left;
+    font-weight: bold;
+}
+
+#user{
+   
+    width: 400px;
     height: 400px;
     font-size:15px;
     text-align:justify;
+   
+}
+#{
     
-    
+    margin-top:10px;
     
 }
-#bitsform{
+#bitsform,#user{
     background-color: rgba(250,250,250,0.3) ;
     width: 1000px;
-    height: 200px;
+    height: auto;
     font-size:15px;
-   
-    
-    
+  
 }
+
 #policyform p{
     font-size:13px;
     text-align:justify;
