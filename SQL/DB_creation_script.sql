@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS bids (
   topic varchar(255) NOT NULL,
   price float(11),
   geography varchar(100),
+  blockedbypublisher boolean,
   PRIMARY KEY (bidID),
   CONSTRAINT FOREIGN KEY (adminID) REFERENCES admins(adminID)
     ON DELETE CASCADE
@@ -38,4 +39,3 @@ CREATE TABLE IF NOT EXISTS users (
     ON DELETE CASCADE
 	ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
-

@@ -33,8 +33,7 @@ if(!isset($_SESSION['adminID'])){
       <!-- Custom styles for this template -->
     <link href="css/grayscale.min.css" rel="stylesheet">
       <link href="css/grayscale.css" rel="stylesheet">
-       <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-        <script src='bitSelection.js' type="text/javascript"> </script>
+      <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
     
 	<title> <?php if(isset($title)){ echo $title; }?></title>
 </head>
@@ -87,6 +86,7 @@ if(!isset($_SESSION['adminID'])){
                                 <th class="table-header">Topic</th>
                                 <th class="table-header">Price</th>
                                 <th class="table-header">Geography</th>
+                                <th class="table-header">Blocked by publisher</th>
                               </tr>
                           </thead>
                           <tbody>
@@ -117,6 +117,13 @@ if(!isset($_SESSION['adminID'])){
                                 <td id="geography"><?php  
                                     echo $result['geography'];
                                     ?></td> 
+                                <td id="blocked"><?php 
+                                    if($result['blockedbypublisher']==true)
+                                    echo "true";
+                                    else
+                                          echo "false";
+                                    ?>
+                                </td> 
                               </tr>                              
                         <?php
                              }
@@ -205,7 +212,10 @@ if(!isset($_SESSION['adminID'])){
                            
                                 <td id="username">
                                    <?php
+                            if($result['username']!=null)
                                     echo $result['username'];
+                            else
+                                  echo "--";
                                    ?>
                                 </td>
                                 <td id="gender"><?php  
@@ -215,17 +225,27 @@ if(!isset($_SESSION['adminID'])){
                                     echo "Male";
                                     else if($result['sex']=="F")
                                     echo "Female";
-                                    else
-                                        echo "-"
+                                    else 
+                                        echo "--";
+                                    
                                     ?></td>
                                 <td id="keywordsAboutInterests"><?php  
+                                    if($result['keywordsAboutInterests']!=null)
                                     echo $result['keywordsAboutInterests'];
+                                    else
+                                        echo "--";
                                     ?></td>
                                 <td id="age"><?php  
+                                    if($result['age']!=0)
                                     echo $result['age'];
+                                    else
+                                        echo "--";
                                     ?></td>
                                   <td id="geography"><?php  
+                            if($result['geo']!=null)
                                     echo $result['geo'];
+                            else
+                                 echo "--";
                                  ?></td> 
                               </tr>                              
                         <?php
@@ -289,7 +309,10 @@ if(!isset($_SESSION['adminID'])){
                             $stmt = $db->prepare('SELECT * FROM users WHERE adminID = :adminID');
                             $stmt->bindParam(':adminID', $adminID);
                             $stmt->execute();
-                         
+                            $age=null;
+                            $geo=null;
+                            $sex=null;
+                            $keywords=null;
                             while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
                                 $age = $result["age"];
                                 $geo = $result["geo"];
@@ -297,20 +320,38 @@ if(!isset($_SESSION['adminID'])){
                                 $keywords=$result["keywordsAboutInterests"];
                             }
                             //write interests in predicates.pl
-                            $pieces = explode(",", $keywords);
                             $my_file = './gorgias/decisionMaking/predicates.pl';
                             $handle = fopen($my_file, 'w') or die('Cannot open file:' . $my_file);
+                            
+                            if($keywords!=null){
+                            $pieces = explode(",", $keywords);
                             for ($i = 0; $i < count($pieces); $i++) {
                                 $fwrite = fwrite($handle, "interests(" . $pieces[$i] . ")");
                                 fwrite($handle, ".\n");
+                            }}
+                            else{
+                                 $fwrite = fwrite($handle, "interests(undefined)");
+                                fwrite($handle, ".\n");
                             }
                            // write age and geography in predicates.pl
+                            if($age!=0){
+                            fwrite($handle, "age(".$age.").");
+                            $fwrite = fwrite($handle, "\n");}
+                            else{
+                               fwrite($handle, "age(undefined).");
+                            $fwrite = fwrite($handle, "\n");
+                            } 
                             
-                            fwrite($handle, "age(");
-                            $fwrite = fwrite($handle, $age);
-                            fwrite($handle, ").\ngeography(");
-                            $fwrite = fwrite($handle, $geo);
-                            fwrite($handle, ").\n");
+                            if($geo!=null){
+                           $geo=strtolower($geo);
+                            
+                            $fwrite = fwrite($handle,"geography(".$geo.").");
+                            fwrite($handle, "\n");}
+                            else{
+                               $fwrite = fwrite($handle,"geography(undefined).");
+                            fwrite($handle, "\n");  
+                                
+                            }
 
                            //write policy in predicates.pl
                                 if ($_POST['policy'] == 1) 
@@ -324,48 +365,63 @@ if(!isset($_SESSION['adminID'])){
                          
 
 
-                            if ($sex == "F")
-                                $fwrite = fwrite($handle, "sex(F)");
-                            else if($sex == "M")
-                                $fwrite = fwrite($handle, "sex(M)");
-                            else
-                                  $fwrite = fwrite($handle, "sex(O)");
-                            fwrite($handle, ".\n");
-                                 $stmt = $db->prepare('SELECT bidcount FROM admins WHERE adminID = :adminID');
+                            if ($sex == "F"){
+                                $fwrite = fwrite($handle, "sex(f)");
+                                   fwrite($handle, ".\n");}
+                            else if($sex == "M"){
+                                $fwrite = fwrite($handle, "sex(m)");
+                                   fwrite($handle, ".\n");}
+                            else if($sex=="O"){
+                                  $fwrite = fwrite($handle, "sex(o)");
+                                   fwrite($handle, ".\n");}
+                            else{
+                                 $fwrite = fwrite($handle, "sex(undefined)");
+                                   fwrite($handle, ".\n");}
+                                      
+                          
+                               $stmt = $db->prepare('SELECT bidcount FROM admins WHERE adminID = :adminID');
                                $stmt->bindParam(':adminID',$adminID);
                                $stmt->execute();	                      
                                  $result = $stmt->fetch(PDO::FETCH_ASSOC);
                                  $bidcount=$result['bidcount'];
                                  
-                               $stmt = $db->prepare('SELECT bidID FROM bids WHERE adminID = :adminID');
+                               $stmt = $db->prepare('SELECT bidID,blockedbypublisher FROM bids WHERE adminID = :adminID');
                                $stmt->bindParam(':adminID',$adminID);
                                $stmt->execute();	                      
                                 $i=1;
                         fwrite($handle, "adList([");
                             while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                if($result['blockedbypublisher']==false){
                                     if($i!=$bidcount)
                                         fwrite($handle, $result['bidID'] . ",");
                                     else
                                          fwrite($handle, $result['bidID']);
+                                    }
                                 $i++;
                                
                             }
                         fwrite($handle,"");
                         fwrite($handle,"]).");
-                           $my_file2 = './gorgias/decisionMaking/bids.pl';
+                                 
+                                    fwrite($handle,"\n");
+                             
+                            $my_file2 = './gorgias/decisionMaking/bids.pl';
                             $handle2 = fopen($my_file2, 'w') or die('Cannot open file:' . $my_file2);
                                $stmt = $db->prepare('SELECT * FROM bids WHERE adminID = :adminID');
                                $stmt->bindParam(':adminID',$adminID);
-                               $stmt->execute();	                      
+                               $stmt->execute();	
+                              
                                while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                                   $fwrite = fwrite($handle2, "ad(".$result["bidID"].",".$result['topic'].",".$result['price'].",".$result['geography'].").");
+                                    $geography=strtolower($result['geography']); 
+                                   $fwrite = fwrite($handle2, "ad(".$result["bidID"].",".$result['topic'].",".$result['price'].",".$geography.").");
                                     $fwrite = fwrite($handle2, "\n");
                                }
 
                             $stmt = $db->prepare('SELECT * FROM bids WHERE adminID = :adminID');
                                $stmt->bindParam(':adminID',$adminID);
                                $stmt->execute();	                      
-                              
+                               $i=0;
+                               $arrayx[]=null;
                                while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
                                     $secfil = 'executeGorgias.pl';
                                     $handle = fopen($secfil, 'w') or die('Cannot open file:' . $secfil);
@@ -377,10 +433,39 @@ if(!isset($_SESSION['adminID'])){
                                     $cmd = "C:\\xampp\htdocs\AdServer\swipl\bin\swipl.exe -f executeGorgias.pl -g askGorgias,halt";
                                     $output = shell_exec(escapeshellcmd($cmd));
                                     if ($output != "false") {
-                                        echo "<p>SHOW AD ".$result['bidID']."</p>";
-                                        echo "</br>";
+                                        $arrayx[$i]=$result['bidID'];
+                                        $i++;
                                     }
                                 }
+                                 ?>
+                            <div id="winner"  class="w3-modal"  href="https://www.w3schools.com/w3css/4/w3.css">
+                                <div class="w3-modal-content w3-animate-zoom" style="max-width:330px;height:300px;">
+                                    <div class="w3-container w3-teal">
+                                        <span style="height:40px; padding-bottom:1%" onclick="document.getElementById('winner').style.display='none'" class="w3-button w3-display-topright w3-large">x</span>
+                                        <h3 style="margin-top:2%;">Winners bids are!</h3>
+                                        <div class="container">    
+                                           
+                                        <?php
+                                 
+                                            for($i=0; $i<sizeof($arrayx);$i++){
+                                              $stmt = $db->prepare('SELECT * FROM bids WHERE adminID = :adminID AND bidID = :bidID');
+                                           $stmt->bindParam(':adminID',$adminID);
+                                         $stmt->bindParam(':bidID',$arrayx[$i]);
+                                       $stmt->execute();	
+                                          $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                                          if(!$result)
+                                               echo "<p style='color:black;'>Νone of these bits won because they were blocked by publisher!!";
+                                        else
+                                          echo "<p style='color:black;'><label>Bit ".$arrayx[$i]." with topic ".$result['topic'].", price ".$result['price']."euro and geography ".$result['geography']."</p>";
+                                      }
+                                    ?>
+                                </div>                                   
+                                </div>
+                              </div>
+                            </div>      
+                          <?php
+                               echo "<script>document.getElementById('winner').style.display='block';</script>";
+           
                            }
                         }
                 else{
@@ -414,6 +499,7 @@ if(!isset($_SESSION['adminID'])){
                                     <br>
                                    <div id="add"> <label for="geography" >Geography</label>
                                       <select name='country' class='dropdown' style="width:182px; height:25px; color:black;">
+                                        <option disabled selected value> -- select an option -- </option>
                                         <option value="Afghanistan">Afghanistan</option>
                                         <option value="Albania">Albania</option>
                                         <option value="Algeria">Algeria</option>
@@ -466,10 +552,10 @@ if(!isset($_SESSION['adminID'])){
                                         <option value="Congo">Congo, the Democratic Republic of the</option>
                                         <option value="Cook Islands">Cook Islands</option>
                                         <option value="Costa Rica">Costa Rica</option>
-                                        <option value="Cota D'Ivoire">Cote d'Ivoire</option>
+                                        <option value="Cota DIvoire">Cote dIvoire</option>
                                         <option value="Croatia">Croatia (Hrvatska)</option>
                                         <option value="Cuba">Cuba</option>
-                                        <option value="Cyprus" selected>Cyprus</option>
+                                        <option value="Cyprus">Cyprus</option>
                                         <option value="Czech Republic">Czech Republic</option>
                                         <option value="Denmark">Denmark</option>
                                         <option value="Djibouti">Djibouti</option>
@@ -527,11 +613,11 @@ if(!isset($_SESSION['adminID'])){
                                         <option value="Kazakhstan">Kazakhstan</option>
                                         <option value="Kenya">Kenya</option>
                                         <option value="Kiribati">Kiribati</option>
-                                        <option value="Democratic People's Republic of Korea">Korea, Democratic People's Republic of</option>
+                                        <option value="Democratic Peoples Republic of Korea">Korea, Democratic People Republic of</option>
                                         <option value="Korea">Korea, Republic of</option>
                                         <option value="Kuwait">Kuwait</option>
                                         <option value="Kyrgyzstan">Kyrgyzstan</option>
-                                        <option value="Lao">Lao People's Democratic Republic</option>
+                                        <option value="Lao">Lao People Democratic Republic</option>
                                         <option value="Latvia">Latvia</option>
                                         <option value="Lebanon">Lebanon</option>
                                         <option value="Lesotho">Lesotho</option>
@@ -683,6 +769,8 @@ if(!isset($_SESSION['adminID'])){
                               </div>
                             </div>
         </div>
+ 
+                         
         <div id="addbid"  class="w3-modal"  href="https://www.w3schools.com/w3css/4/w3.css">
                         <div class="w3-modal-content w3-animate-zoom" style="max-width:330px;">
                             <div class="w3-container w3-teal">
@@ -695,11 +783,16 @@ if(!isset($_SESSION['adminID'])){
                                
                                   <br>
                                       <div id="add"> <label for="topic">Topic</label><span class="error">*</span><input type="text"  style="border-bottom: 2px solid #808080 !important;" name="topic" placeholder="e.g. Food" required></div>
+                                        <br>
+                                      <div id="add"><label for="blocked">Blocked by publisher</label>
+                                          <div style="float:right;padding-left:3%;"><input name="blocked" type="radio" value="F" ><label  style="padding-left:2%" >False</label></div><div style="float:right;padding-left:3%;"><input  name="blocked" type="radio" value="T" required><label  style="padding-left:2%">True</label></div></div>
                                     <br>
                                     <div id="add"> <label for="price">Price</label><span class="error">*</span> <input type="text" name="price" placeholder="e.g. 1.8 euro" style="border-bottom: 2px solid #808080 !important;" required> </div>
                                     <br>
                                    <div id="add"> <label for="country" >Geography</label><span class="error">*</span>
                                       <select name='country' class='dropdown' style=" width:200px; color:black;">
+                                          
+                                        <option disabled selected value> -- select an option -- </option>
                                         <option value="Afghanistan">Afghanistan</option>
                                         <option value="Albania">Albania</option>
                                         <option value="Algeria">Algeria</option>
@@ -752,10 +845,10 @@ if(!isset($_SESSION['adminID'])){
                                         <option value="Congo">Congo, the Democratic Republic of the</option>
                                         <option value="Cook Islands">Cook Islands</option>
                                         <option value="Costa Rica">Costa Rica</option>
-                                        <option value="Cota D'Ivoire">Cote d'Ivoire</option>
+                                        <option value="Cota DIvoire">Cote dIvoire</option>
                                         <option value="Croatia">Croatia (Hrvatska)</option>
                                         <option value="Cuba">Cuba</option>
-                                        <option value="Cyprus" selected>Cyprus</option>
+                                        <option value="Cyprus" >Cyprus</option>
                                         <option value="Czech Republic">Czech Republic</option>
                                         <option value="Denmark">Denmark</option>
                                         <option value="Djibouti">Djibouti</option>
@@ -813,11 +906,11 @@ if(!isset($_SESSION['adminID'])){
                                         <option value="Kazakhstan">Kazakhstan</option>
                                         <option value="Kenya">Kenya</option>
                                         <option value="Kiribati">Kiribati</option>
-                                        <option value="Democratic People's Republic of Korea">Korea, Democratic People's Republic of</option>
+                                        <option value="Democratic Peoples Republic of Korea">Korea, Democratic People Republic of</option>
                                         <option value="Korea">Korea, Republic of</option>
                                         <option value="Kuwait">Kuwait</option>
                                         <option value="Kyrgyzstan">Kyrgyzstan</option>
-                                        <option value="Lao">Lao People's Democratic Republic</option>
+                                        <option value="Lao">Lao People Democratic Republic</option>
                                         <option value="Latvia">Latvia</option>
                                         <option value="Lebanon">Lebanon</option>
                                         <option value="Lesotho">Lesotho</option>
@@ -948,14 +1041,21 @@ if(!isset($_SESSION['adminID'])){
                                     <?php
                                     if(isset($_POST['add'])){
                                     $topic=$_POST['topic'];
+                                    $blockedbypublisher=$_POST['blocked'];
+                                    if($blockedbypublisher=="T")
+                                        $blockedbypublisher=true;
+                                    elseif ($blockedbypublisher=="F")
+                                         $blockedbypublisher=false;
+
                                     $price=$_POST['price'];
                                     $geography=$_POST['country'];
-                                     $stmt = $db->prepare('INSERT INTO bids(adminID,topic,price,geography)VALUES (:adminID,:topic,:price,:geography)');
+                                     $stmt = $db->prepare('INSERT INTO bids(adminID,topic,price,geography,blockedbypublisher)VALUES (:adminID,:topic,:price,:geography,:blockedbypublisher)');
                                      $stmt->execute(array(
                                             ':adminID' => $adminID,
                                             ':topic' => $topic,
                                             ':price' => $price,
-                                            ':geography' =>$geography
+                                            ':geography' =>$geography,
+                                            ':blockedbypublisher' => $blockedbypublisher
                                         ));
                                        $stmt = $db->prepare('SELECT bidcount FROM admins WHERE adminID=:adminID;');
                                        $stmt->bindParam(':adminID', $adminID);

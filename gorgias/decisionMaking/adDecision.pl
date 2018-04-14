@@ -45,40 +45,70 @@ rule(r(ad,I), show(ad,I), []):-adList(Z),member(I,Z),ad(I,_,_,_).
 
 % Normal Policy
  
-%%%%%%%%%%%%%%%%%%% 001 PREFER AD ON USER GEOGRAPGY %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-rule(g(ad,X), prefer(r(ad,X),r(ad,I)),[]):-policy(3),adList(Z),member(X,Z),member(I,Z),X=\=I,match-geography(X),not(match-interests(X)),not(check-price(X)).
+%%%%%%%%%%%%%%%%%%%% 111 PREFER AD WITH USER INTERESTS HIGHPRICE AND USER GEOGRAPGY %%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%% 010 PREFER AD WITH HIGHPRICE %%%%%%%%%%%%%%%%%
-
-rule(h(ad,X), prefer(r(ad,X),r(ad,I)),[]):-adList(Z),member(X,Z),member(I,Z),X=\=I,check-price(X),not(match-interests(X)),not(match-geography(X)).
-
-
-%%%%%%%%%%%%%%%%%%%% 011 PREFER AD WITH HIGHPRICE AND GEOGRAPHY %%%%%%%%%%%%%%%%%
-
-rule(hg(ad,X), prefer(r(ad,X),r(ad,I)),[]):-adList(Z),member(X,Z),member(I,Z),X=\=I,check-price(X),match-geography(X),not(match-interests(X)).
-
-%%%%%%%%%%%% 100 PREFER ADS ON USER INTERESTS %%%%%%%%%%%%%%%%%%%%
-
-rule(i(ad,X), prefer(r(ad,X),r(ad,I)),[]):-adList(Z),member(X,Z),member(I,Z),X=\=I,match-interests(X),not(match-geography(X)),not(check-price(X)).
-
-%%%%%%%%%%%%%%%%%%%% 101 PREFER AD WITH USER INTERESTS AND USER GEOGRAPGY %%%%%%%%%%%%%%%%%
-
-rule(ig(ad,X), prefer(r(ad,X),r(ad,I)),[]):-adList(Z),member(X,Z),member(I,Z),X=\=I,match-interests(X),match-geography(X),not(check-price(X)).
-
+rule(ihg(ad,X), prefer(r(ad,X),r(ad,I)),[]):-adList(Z),member(X,Z),member(I,Z),X=\=I,match-interests(X),check-price(X),match-geography(X).
 
 %%%%%%%%%%%%%%%%%%%% 110 PREFER AD WITH USER INTERESTS HIGHPRICE %%%%%%%%%%%%%%%%%
 
 rule(ih(ad,X), prefer(r(ad,X),r(ad,I)),[]):-adList(Z),member(X,Z),member(I,Z),X=\=I,match-interests(X),check-price(X),not(match-geography(X)).
 
 
-%%%%%%%%%%%%%%%%%%%% 111 PREFER AD WITH USER INTERESTS HIGHPRICE AND USER GEOGRAPGY %%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%% 101 PREFER AD WITH USER INTERESTS AND USER GEOGRAPGY %%%%%%%%%%%%%%%%%
 
-rule(ihg(ad,X), prefer(r(ad,X),r(ad,I)),[]):-adList(Z),member(X,Z),member(I,Z),X=\=I,match-interests(X),check-price(X),match-geography(X).
-
-
+rule(ig(ad,X), prefer(r(ad,X),r(ad,I)),[]):-adList(Z),member(X,Z),member(I,Z),X=\=I,match-interests(X),match-geography(X),not(check-price(X)).
 
 
+%%%%%%%%%%%% 100 PREFER ADS ON USER INTERESTS %%%%%%%%%%%%%%%%%%%%
+
+rule(i(ad,X), prefer(r(ad,X),r(ad,I)),[]):-adList(Z),member(X,Z),member(I,Z),X=\=I,match-interests(X),not(match-geography(X)),not(check-price(X)).
+
+
+%%%%%%%%%%%%%%%%%%%% 011 PREFER AD WITH HIGHPRICE AND GEOGRAPHY %%%%%%%%%%%%%%%%%
+
+rule(hg(ad,X), prefer(r(ad,X),r(ad,I)),[]):-adList(Z),member(X,Z),member(I,Z),X=\=I,check-price(X),match-geography(X),not(match-interests(X)).
+
+%%%%%%%%%%%%%%%%%%%% 010 PREFER AD WITH HIGHPRICE %%%%%%%%%%%%%%%%%
+
+rule(h(ad,X), prefer(r(ad,X),r(ad,I)),[]):-adList(Z),member(X,Z),member(I,Z),X=\=I,check-price(X),not(match-interests(X)),not(match-geography(X)).
+
+%%%%%%%%%%%%%%%%%%% 001 PREFER AD ON USER GEOGRAPGY %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+rule(g(ad,X), prefer(r(ad,X),r(ad,I)),[]):-policy(3),adList(Z),member(X,Z),member(I,Z),X=\=I,match-geography(X),not(match-interests(X)),not(check-price(X)).
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%% POLICY 1,2,3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%% 111  PREFER ADS WITH USER INTEERESTS HIGHPRICE AND USER GEO THAN USER INTERESTS ONLY %%%%%%%%%%%%%%%%%%%
+
+rule(pihg(ad,X), prefer(ihg(ad,X),i(ad,I)),[]):-adList(Z),member(X,Z),member(I,Z),X=\=I.
+
+
+%%%%%%%%%%%%%%%%%%%%% 111  PREFER ADS WITH USER INTEERESTS HIGHPRICE AND USER GEO THAN HIGHPRICE ONLY %%%%%%%%%%%%%%%%%%%
+
+rule(pihg(ad,X), prefer(ihg(ad,X),h(ad,I)),[]):-adList(Z),member(X,Z),member(I,Z),X=\=I.
+
+
+%%%%%%%%%%%%%%%%%%%%% 111  PREFER ADS WITH USER INTEERESTS HIGHPRICE AND USER GEO THAN USER GEOGRAPHY AND HIGHPRICE %%%%%%%%%%%%%%%%%%%
+
+rule(pihg(ad,X), prefer(ihg(ad,X),hg(ad,I)),[]):-adList(Z),member(X,Z),member(I,Z),X=\=I.
+
+
+%%%%%%%%%%%%%%%%%%%%% 111  PREFER ADS WITH USER INTEERESTS HIGHPRICE AND USER GEO THAN USER INTERESTS AND HIGHPRICE %%%%%%%%%%%%%%%%%%%
+
+rule(pihg(ad,X), prefer(ihg(ad,X),ih(ad,I)),[]):-adList(Z),member(X,Z),member(I,Z),X=\=I.
+
+%%%%%%%%%%%%%%%%%%%%% 111  PREFER ADS WITH USER INTEERESTS HIGHPRICE AND USER GEO THAN USER INTERESTS AND GEOGRAPHY %%%%%%%%%%%%%%%%%%%
+
+rule(pihg(ad,X), prefer(ihg(ad,X),ig(ad,I)),[]):-adList(Z),member(X,Z),member(I,Z),X=\=I.
+
+%%%%%%%%%%%%%%%%%%%%% 111  PREFER ADS WITH USER INTEERESTS HIGHPRICE AND USER GEO THAN USER GEOGRAPHY %%%%%%%%%%%%%%%%%%%
+
+rule(pihg(ad,X), prefer(ihg(ad,X),g(ad,I)),[]):-adList(Z),member(X,Z),member(I,Z),X=\=I.
 
 %%%%%%%%%%% PRIORITY INTERESTS,HIGHPRICE,GEOGRAPHY %%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%% POLICY 1,3 %%%%%%%%%%%%%%%%%%
@@ -197,35 +227,6 @@ rule(pih(ad,X), prefer(ih(ad,X),ig(ad,I)),[]):-policy(P),(P==1;P==2)->adList(Z),
 rule(pih(ad,X), prefer(ih(ad,X),hg(ad,I)),[]):-policy(P),(P==1;P==2;P==3)->adList(Z),member(X,Z),member(I,Z),X=\=I.
 
 
-
-%%%%%%%%%%%%%%%%%%%% POLICY 1,2,3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%% 111  PREFER ADS WITH USER INTEERESTS HIGHPRICE AND USER GEO THAN USER INTERESTS ONLY %%%%%%%%%%%%%%%%%%%
-
-rule(pihg(ad,X), prefer(ihg(ad,X),i(ad,I)),[]):-adList(Z),member(X,Z),member(I,Z),X=\=I.
-
-
-%%%%%%%%%%%%%%%%%%%%% 111  PREFER ADS WITH USER INTEERESTS HIGHPRICE AND USER GEO THAN HIGHPRICE ONLY %%%%%%%%%%%%%%%%%%%
-
-rule(pihg(ad,X), prefer(ihg(ad,X),h(ad,I)),[]):-adList(Z),member(X,Z),member(I,Z),X=\=I.
-
-
-%%%%%%%%%%%%%%%%%%%%% 111  PREFER ADS WITH USER INTEERESTS HIGHPRICE AND USER GEO THAN USER GEOGRAPHY AND HIGHPRICE %%%%%%%%%%%%%%%%%%%
-
-rule(pihg(ad,X), prefer(ihg(ad,X),hg(ad,I)),[]):-adList(Z),member(X,Z),member(I,Z),X=\=I.
-
-
-%%%%%%%%%%%%%%%%%%%%% 111  PREFER ADS WITH USER INTEERESTS HIGHPRICE AND USER GEO THAN USER INTERESTS AND HIGHPRICE %%%%%%%%%%%%%%%%%%%
-
-rule(pihg(ad,X), prefer(ihg(ad,X),ih(ad,I)),[]):-adList(Z),member(X,Z),member(I,Z),X=\=I.
-
-%%%%%%%%%%%%%%%%%%%%% 111  PREFER ADS WITH USER INTEERESTS HIGHPRICE AND USER GEO THAN USER INTERESTS AND GEOGRAPHY %%%%%%%%%%%%%%%%%%%
-
-rule(pihg(ad,X), prefer(ihg(ad,X),ig(ad,I)),[]):-adList(Z),member(X,Z),member(I,Z),X=\=I.
-
-%%%%%%%%%%%%%%%%%%%%% 111  PREFER ADS WITH USER INTEERESTS HIGHPRICE AND USER GEO THAN USER GEOGRAPHY %%%%%%%%%%%%%%%%%%%
-
-rule(pihg(ad,X), prefer(ihg(ad,X),g(ad,I)),[]):-adList(Z),member(X,Z),member(I,Z),X=\=I.
 
 
 
