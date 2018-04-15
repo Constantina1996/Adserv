@@ -192,9 +192,9 @@ if(!isset($_SESSION['adminID'])){
                      <table id="data">
                           <thead>
                               <tr>
-                                <th class="table-header">Username</th>
+                                <th class="table-header">User ID</th>
                                 <th class="table-header">Gender</th>
-                                <th class="table-header">Keywords about Interests</th>
+                                <th class="table-header">Category of user</th>
                                 <th class="table-header">Age</th>
                                 <th class="table-header">Geography</th>
                               </tr>
@@ -210,10 +210,10 @@ if(!isset($_SESSION['adminID'])){
                               
                         <tr id="users">    
                            
-                                <td id="username">
+                                <td id="userID">
                                    <?php
-                            if($result['username']!=null)
-                                    echo $result['username'];
+                            if($result['userID']!=null)
+                                    echo $result['userID'];
                             else
                                   echo "--";
                                    ?>
@@ -230,8 +230,10 @@ if(!isset($_SESSION['adminID'])){
                                     
                                     ?></td>
                                 <td id="keywordsAboutInterests"><?php  
-                                    if($result['keywordsAboutInterests']!=null)
-                                    echo $result['keywordsAboutInterests'];
+                                    if($result['keywordsAboutInterests']!=null){
+                                    $keywords=$result['keywordsAboutInterests'];
+                                    $keywords[strlen($keywords)-1]=null;
+                                    echo $keywords;}
                                     else
                                         echo "--";
                                     ?></td>
@@ -281,14 +283,11 @@ if(!isset($_SESSION['adminID'])){
                              <h6  style="padding-top:15px;font-size:15px;text-align:center;font-size:15px;">Choose a policy</h6>
 
                             <label for="1"> Policy 1</label><br>
-                                       <input type="radio" name="policy" value="1" id="1" class="radiobtn"  /><p style="display:inline;font-size:15px;"> This policy prefers ads with user interests. The second priority is
-                                        high price and the third priority is user geography</p><br><br>
+                                       <input type="radio" name="policy" value="1" id="1" class="radiobtn"  /><p style="display:inline;font-size:15px;"> This policy prefers ads on user interests and high price</p><br><br>
                                     <label for="2"> Policy 2</label><br>
-                                  <input type="radio" name="policy" value="2" id="2"  class="radiobtn"  /><p style="display:inline;font-size:15px;"> This policy prefers ads with high price. The second priority is
-                                            user interests and the third priority is user geography</p><br><br>
+                                  <input type="radio" name="policy" value="2" id="2"  class="radiobtn"  /><p style="display:inline;font-size:15px;"> This policy prefers ads with high price</p><br><br>
                                    <label for="3"> Policy 3</label><br>
-                                 <input type="radio" name="policy" value="3" id="3" class="radiobtn" /><p style="font-size:15px;display:inline;"> This policy prefers ads with user interests. The second priority is
-                                            user geography and the third priority is high price</p>
+                                 <input type="radio" name="policy" value="3" id="3" class="radiobtn" /><p style="font-size:15px;display:inline;"> This policy prefers ads on user interests and user geography</p>
                   <br>
                     <br>
              <center> <p id="errorpolicy" class="alert alert-danger" style="display:none; width:250px; height:auto;font-size:15px;">You have to select a policy</p></center> <br>
@@ -325,8 +324,9 @@ if(!isset($_SESSION['adminID'])){
                             
                             if($keywords!=null){
                             $pieces = explode(",", $keywords);
-                            for ($i = 0; $i < count($pieces); $i++) {
-                                $fwrite = fwrite($handle, "interests(" . $pieces[$i] . ")");
+                            for ($i = 0; $i < count($pieces)-1; $i++) {
+                                $pi=strtolower($pieces[$i]);
+                                $fwrite = fwrite($handle, "interests(" . $pi . ")");
                                 fwrite($handle, ".\n");
                             }}
                             else{
@@ -413,7 +413,8 @@ if(!isset($_SESSION['adminID'])){
                               
                                while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
                                     $geography=strtolower($result['geography']); 
-                                   $fwrite = fwrite($handle2, "ad(".$result["bidID"].",".$result['topic'].",".$result['price'].",".$geography.").");
+                                    $topic=strtolower($result['topic']); 
+                                   $fwrite = fwrite($handle2, "ad(".$result["bidID"].",".$topic.",".$result['price'].",".$geography.").");
                                     $fwrite = fwrite($handle2, "\n");
                                }
 
@@ -427,12 +428,12 @@ if(!isset($_SESSION['adminID'])){
                                     $handle = fopen($secfil, 'w') or die('Cannot open file:' . $secfil);
                                     fwrite($handle, ":-consult('./gorgias/decisionMaking/adDecision.pl').");
                                     fwrite($handle, "\n");
-                                    fwrite($handle, "askGorgias:-prove([show(ad,".$result['bidID'].")],Delta).");
+                                    fwrite($handle, "askGorgias:-prove([show(ad,".$result['bidID'].")],Delta),write(1).");
                                     fwrite($handle, "\n");
                                     fwrite($handle, 'askGorgias:-write("false").');
                                     $cmd = "C:\\xampp\htdocs\AdServer\swipl\bin\swipl.exe -f executeGorgias.pl -g askGorgias,halt";
                                     $output = shell_exec(escapeshellcmd($cmd));
-                                    if ($output != "false") {
+                                    if ($output == 1) {
                                         $arrayx[$i]=$result['bidID'];
                                         $i++;
                                     }
@@ -477,7 +478,7 @@ if(!isset($_SESSION['adminID'])){
         
          </div>     
         <div id="adduser"  class="w3-modal"  href="https://www.w3schools.com/w3css/4/w3.css">
-                        <div class="w3-modal-content w3-animate-zoom" style="max-width:400px; height:380px;">
+                        <div class="w3-modal-content w3-animate-zoom" style="max-width:450px; height:740px;">
                             <div class="w3-container w3-teal">
                                 <span style="height:40px; padding-bottom:1%" onclick="document.getElementById('adduser').style.display='none'" class="w3-button w3-display-topright w3-large">x</span>
                                 <h3 style="margin-top:2%;">Add a user!</h3>
@@ -487,19 +488,42 @@ if(!isset($_SESSION['adminID'])){
                                 <form method="post" action="" id="add-form" >
                                
                                   <br>
-                                      <div id="add"> <label for="username">Username</label><input type="text"  style="border-bottom: 2px solid #808080 !important;" name="username" placeholder="Nicole" ></div>
-                                    <br>
+                                 
                                     <div id="add"><label for="gender">Gender</label>
                                         <div style="float:right;padding-left:3%;"><input name="gender" type="radio" value="F"><label  style="padding-left:2%">Female</label></div><div style="float:right;padding-left:3%;"><input  name="gender" type="radio" value="M"><label  style="padding-left:2%"> Male </label></div><div style="float:right;padding-left:3%;"><input name="gender" type="radio" value="O"><label  style="padding-left:2%"> Other </label></div></div>
                                     <br>
-                                    <div id="add"> <label for="keywords">Keywords About Interests</label><input type="text" name="keywords" placeholder="e.g. food,news" style="border-bottom: 2px solid #808080 !important;" > </div>
+                                   <div id="add"> <label for="keywords" >Category of user</label><span class="error">*</span>
+                                    <div id="checkboxx"> <input type="checkbox" name="Food" value="Food"/>Food lover</div><br>
+                                       <div id="checkboxx"> <input  type="checkbox" name="News" value="News" />News lover</div><br>
+                                       <div id="checkboxx"> <input  type="checkbox" name="Entertainment" value="Entertainment"/>Entertainment lover</div><br>
+                                       <div id="checkboxx">   <input  type="checkbox" name="Beauty" value="Beauty"/>Beauty lover</div><br>
+                                       <div id="checkboxx"><input  type="checkbox" name="Personal" value="Personal Care"/>Personal Care lover</div><br>
+                                       <div id="checkboxx"> <input  type="checkbox" name="Travel" value="Travel"/>Travel lover</div><br>
+                                       <div id="checkboxx">  <input  type="checkbox" name="Health" value="Health"/>Health lover </div><br>
+                                       <div id="checkboxx"> <input  type="checkbox" name="Fitness" value="Fitness"/>Fitness lover</div><br>
+                                           <div id="checkboxx">    <input  type="checkbox" name="Sports" value="Sports"/>Sports lover</div><br>
+                                       <div id="checkboxx"> <input  type="checkbox" name="Pets" value="Pets"/>Pets lover</div><br>
+                                           <div id="checkboxx">  <input  type="checkbox" name="Art" value="Art"/>Art lover</div><br>
+                                          <div id="checkboxx">   <input  type="checkbox" name="Cars" value="Cars"/>Cars lover</div><br>
+                                         <div id="checkboxx">  <input  type="checkbox" name="Motorcycles" value="Motorcycles"/>Motorcycles lover</div><br>
+                                          <div id="checkboxx">   <input  type="checkbox" name="Family" value="Family and Parenting"/>Family lover</div><br>
+                                         <div id="checkboxx">   <input  type="checkbox" name="Drinks" value="Drinks"/>Drinks lover</div><br>
+                                         <div id="checkboxx">     <input  type="checkbox" name="Home" value="Home and Garden"/>Home &amp; Garden lover</div><br>
+                                       <div id="checkboxx">     <input  type="checkbox" name="wedding" value="Weddings"/>Weddings lover</div><br>
+                                       <div id="checkboxx">    <input  type="checkbox" name="business" value="Business"/>Marketing lover</div><br>
+                                        <div id="checkboxx">    <input  type="checkbox" name="com" value="Computers and Technology"/>Computers &amp; Technology lover</div><br>
+                                        <div id="checkboxx">     <input  type="checkbox" name="sc" value="Science"/>Science lover</div><br>
+                                       <div id="checkboxx">    <input  type="checkbox" name="video" value="Video games"/>Video Games lover</div>
+                                        <div id="checkboxx">    <input  type="checkbox" name="fashion" value="Fashion and Style"/>Fashion &amp; Style lover</div> 
+                                       <div id="checkboxx">    <input  type="checkbox" name="education" value="Education"/>Education</div>
+                                     </div>  
                                     <br>
                                     <div id="add"><label for="age">Age</label>
                                       <input type="text" name="age" placeholder="e.g 20" style="border-bottom: 2px solid #808080 !important;" ></div>
                                     <br>
                                    <div id="add"> <label for="geography" >Geography</label>
                                       <select name='country' class='dropdown' style="width:182px; height:25px; color:black;">
-                                        <option disabled selected value> -- select an option -- </option>
+                                        <option disabled selected value> -- one option -- </option>
                                         <option value="Afghanistan">Afghanistan</option>
                                         <option value="Albania">Albania</option>
                                         <option value="Algeria">Algeria</option>
@@ -746,16 +770,64 @@ if(!isset($_SESSION['adminID'])){
                                     <br>
                                     <center><input style="background-color: #0e2f44;" class="btn btn-default" name="addButton" id="loginbtn" type="submit" value="Add"></center>
                                     <?php
+                                    
                                     if(isset($_POST['addButton'])){
-                                    $username=$_POST['username'];
-                                    $keywords=$_POST['keywords'];
+                                      if(isset($_POST['News']))
+                                        $keywords.=$_POST['News'].",";
+                                    if(isset($_POST['Food']))
+                                        $keywords.=$_POST['Food'].","; 
+                                    if(isset($_POST['Entertainment']))
+                                        $keywords.=$_POST['Entertainment'].",";
+                                    if(isset($_POST['Personal']))
+                                        $keywords.=$_POST['Personal'].",";
+                                    if(isset($_POST['Travel']))
+                                        $keywords.=$_POST['Travel'].","; 
+                                    if(isset($_POST['Beauty']))
+                                        $keywords.=$_POST['Beauty'].","; 
+                                    if(isset($_POST['Health']))
+                                        $keywords.=$_POST['Health'].","; 
+                                    if(isset($_POST['Fitness']))
+                                        $keywords.=$_POST['Fitness'].",";
+                                    if(isset($_POST['Sports']))
+                                        $keywords.=$_POST['Sports'].","; 
+                                    if(isset($_POST['Pets']))
+                                        $keywords.=$_POST['Pets'].","; 
+                                    if(isset($_POST['Art']))
+                                        $keywords.=$_POST['Art'].","; 
+									if(isset($_POST['Cars']))
+                                        $keywords.=$_POST['Cars'].","; 
+									if(isset($_POST['Motorcycles']))
+                                        $keywords.=$_POST['Motorcycles'].","; 
+									if(isset($_POST['Family']))
+                                        $keywords.=$_POST['Family'].","; 
+									if(isset($_POST['Drinks']))
+                                        $keywords.=$_POST['Drinks'].",";
+									if(isset($_POST['Home']))
+                                        $keywords.=$_POST['Home'].",";
+									if(isset($_POST['wedding']))
+                                        $keywords.=$_POST['wedding'].",";
+									if(isset($_POST['business']))
+                                        $keywords.=$_POST['business'].",";
+									if(isset($_POST['com']))
+                                        $keywords.=$_POST['com'].",";
+									if(isset($_POST['sc']))
+                                        $keywords.=$_POST['sc'].",";
+									if(isset($_POST['video']))
+                                        $keywords.=$_POST['video'].",";
+                                    if(isset($_POST['fashion']))
+                                        $keywords.=$_POST['fashion'].",";
+                                    if(isset($_POST['education']))
+                                        $keywords.=$_POST['fashion'].",";
+                                  
+                                  
+                                
+                                  
                                     $age=$_POST['age'];
                                     $sex=$_POST['gender'];
                                     $geo=$_POST['country'];
-                                     $stmt = $db->prepare('INSERT INTO users(adminID,username,keywordsAboutInterests,age,sex,geo)VALUES (:adminID,:username,:keywordsAboutInterests,:age,:sex,:geo)');
+                                     $stmt = $db->prepare('INSERT INTO users(adminID,keywordsAboutInterests,age,sex,geo)VALUES (:adminID,:keywordsAboutInterests,:age,:sex,:geo)');
                                      $stmt->execute(array(
                                             ':adminID' => $adminID,
-                                            ':username' => $username,
                                             ':keywordsAboutInterests' =>$keywords,
                                             ':age' => $age,
                                             ':sex' => $sex,
@@ -782,15 +854,47 @@ if(!isset($_SESSION['adminID'])){
                                 <form method="post" action="" id="add-form" >
                                
                                   <br>
-                                      <div id="add"> <label for="topic">Topic</label><span class="error">*</span><input type="text"  style="border-bottom: 2px solid #808080 !important;" name="topic" placeholder="e.g. Food" required></div>
-                                        <br>
+                                       <div id="add"> <label for="topic" >Topic</label><span class="error">*</span>
+                                      <select name='topic' class='dropdown' style=" width:200px; color:black;" required>
+                                       <option disabled selected value> -- one option -- </option>
+                                        <option value="Food">Food</option>
+                                        <option value="News">News</option>
+                                        <option value="Entertainment">Entertainment</option>
+                                        <option value="Beauty">Beauty</option>  
+                                        <option value="Personal Care">Personal Care</option>
+                                        <option value="Travel">Travel</option>
+                                        <option value="Health">Health</option> 
+                                        <option value="Fitness">Fitness</option>
+                                        <option value="Sports">Sports</option>
+                                        <option value="Pets">Pets</option>
+                                        <option value="Art">Art</option>
+                                        <option value="Cars">Cars</option>
+                                        <option value="Motorcycles">Motorcycles</option>
+                                        <option value="Family and Parenting">Family &amp; Parenting</option>
+                                        <option value="Drinks">Drinks</option>
+                                        <option value="Home and Garden">Home &amp; Garden</option>
+                                        <option value="Weddings">Weddings</option>
+                                        <option value="Business">Business</option>
+                                        <option value="Computers and Technology">Computers &amp; Technology</option>
+                                        <option value="Science">Science</option>
+                                        <option value="Video games">Video Games</option>
+                                        <option value="Fashion and Style">Fashion &amp; Style</option> 
+                                        <option value="Education">Education</option>
+                                   
+                                           </select>
+                                            
+                                    </div>
+                                        
+                                        
+                                    <br>
+                                    
                                       <div id="add"><label for="blocked">Blocked by publisher</label>
                                           <div style="float:right;padding-left:3%;"><input name="blocked" type="radio" value="F" ><label  style="padding-left:2%" >False</label></div><div style="float:right;padding-left:3%;"><input  name="blocked" type="radio" value="T" required><label  style="padding-left:2%">True</label></div></div>
                                     <br>
                                     <div id="add"> <label for="price">Price</label><span class="error">*</span> <input type="text" name="price" placeholder="e.g. 1.8 euro" style="border-bottom: 2px solid #808080 !important;" required> </div>
                                     <br>
                                    <div id="add"> <label for="country" >Geography</label><span class="error">*</span>
-                                      <select name='country' class='dropdown' style=" width:200px; color:black;">
+                                      <select name='country' class='dropdown' style=" width:200px; color:black;" required>
                                           
                                         <option disabled selected value> -- select an option -- </option>
                                         <option value="Afghanistan">Afghanistan</option>

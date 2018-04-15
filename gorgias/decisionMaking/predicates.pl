@@ -1,7 +1,8 @@
+interests(news).
 interests(food).
-interests(pets).
-age(20).
-geography(cy).
-policy(1).
+interests(beauty).
+age(undefined).
+geography(undefined).
+policy(3).
 sex(o).
-adList([1,2,3,4,5,6,7,8,9]).
+adList([3,4,5,6]).

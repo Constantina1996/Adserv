@@ -29,7 +29,6 @@ CREATE TABLE IF NOT EXISTS bids (
 CREATE TABLE IF NOT EXISTS users (
   userID int(11) DEFAULT '1',
   adminID int(11),
-  username varchar(255) NOT NULL,
   keywordsAboutInterests varchar(255),
   age int(11),
   sex varchar(1),

@@ -5,6 +5,10 @@
 :- dynamic check-price/1,match-interests/1,blockedbypublisher/1,match-geography/1,ad/4,sex/1,age/1,
                    geography/1,categorybysex/2,categorybyage/2,check-age/1,check-sex/1,policy/1,adList/1,adListUpdate/1,check/2.
 
+
+
+                                      
+                                        
 %%%%%%%%%%%% FUNCTIONS %%%%%%%%%%%%%%%%%%%%
 
 match-interests(B):-ad(B,I,_,_),interests(I).
@@ -17,19 +21,27 @@ check(_,[]).
 
 check(B,[Z|Zs]):-ad(B,_,P1,_),ad(Z,_,P2,_),B=\=Z,ad(Z,_,P2,_)->P1>=P2,check(B,Zs);
                                            check(B,Zs).
+check-age(B):-ad(B,I,_,_),age(A),categorybyage(I,A). %%%
 
-%%% check-age(B):-ad(B,I,_,_),age(A),categorybyage(I,A). %%%
+check-sex(B):-ad(B,I,_,_),sex(S),categorybysex(I,S).
+                                        
+categorybyage(I,A):-       A>=0,A<=10->(I=sports; I=entertainment; I=pets; I=art);
+ 
+                            A>=10,A<18->(I=video games;I=beauty;I=sports;I=entertainment;I=beauty;I=fashion and style;I=food;I=computers and technology;I=pets;I=education;I=science);
 
-% check-sex(B):-ad(B,I,_,_),sex(S),categorybysex(I,S).
-
-% categorybyage(I,A):-    A>=10,A<15 -> (I=sports; I=entertainment; I=pets);
-%                        A>=15,A<20->(I=sports;I=entertainment;I=clothes;I=cosmetics;I=food;I=technology;I=pets);
-%                        A>=20,A<40->(I=entertainment;I=clothes;I=food;I=cosmetics;I=travelling;I=technology;I=cars;I=sports;I=pets);
-%                        A>=40,A<60->(I=clothes;I=food;I=cosmetics;I=travelling;I=health);
-%                        A>=60,A<80->(I=health;I=food).
+                            A>=18,A<25->          
+                            
+                            (I=personal care;I=entertainment;I=fashion and style;I=food;I=beauty;I=travel;I=computer and technology;I=cars;I=sports;I=pets;I=business;I=fitness;I=news;I=video games;I=drinks;I=education;I=science);
+                            
+                            A>=26,A<40->
+                                (I=personal care;I=entertainment;I=fashion and style;I=food;I=beauty;I=travel;I=computer and technology;I=cars;I=sports;I=pets;I=business;I=fitness;I=news;I=health;I=family and parenting;I=weddings;I=home and garden;I=drinks;);
+                            
+                            A>=40,A<60->(I=beauty;I=food;I=travel;I=health;I=personal care;I=drinks;I=home and garden;I=family and parenting;I=cars;);
+                            
+                            A>=60->(I=health;I=food;I=art;I=personal care;I=home and garden;).
 						
-% categorybysex(I,S):-    S==female ->(I=health;I=food;I=pets;I=cosmetics;I=entertainment;I=travelling;I=sports;I=technology;I=clothes);
-                       % S==male->(I=health;I=food;I=pets;I=cars;I=entertainment;I=travelling;I=sports;I=technology).
+categorybysex(I,S):-    S==f ->(I=fashion and style;I=personal care;I=weddings;I=beauty);
+                        S==m->(I=motorcycles;I=video games;).
 
 %%%%%%%%%%%%%%% OPTIONS THAT ARE AGAINST %%%%%%%%%%% 						
 										
