@@ -1,4 +1,9 @@
-ad(3,news,1,bahrain).
-ad(4,health,1,bahrain).
-ad(5,food,1,bangladesh).
-ad(6,fitness,1.8,bahamas).
+ad(1,clothes,3.50,cy). %011 
+ad(2,sports,1.00,cy). %001 
+ad(3,cosmetics,3.50,en). %010 
+ad(4,pets,1.00,cy).  %101 
+ad(5,new,2.00,fr).  %000 
+ad(6,pets,3.50,en).  %110 
+ad(7,pets,1.0,en).  %100 
+ad(8,food,3.50,cy). %111 
+ad(9,health,3.50,cy). %111 
