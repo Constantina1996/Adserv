@@ -70,12 +70,6 @@ require_once('includes/config.php');
                                         <input type="text" class="form-control" name="username" placeholder="username" required>
                                     </div>
                                     <br>
-                                     <div class="input-group">
-                                        <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-                                        <input  type="email" class="form-control" name="email" placeholder="email" required>
-                                        
-                                    </div>
-                                    <br>
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="fa fa-lock"></i></span>
                                         <input  type="password" class="form-control" name="password" placeholder="password" required>
@@ -99,11 +93,6 @@ require_once('includes/config.php');
                                 $usernameAdmin=$_POST['username'];
                                 $passwordAdmin=$_POST['password'];
                                 $confpassword=$_POST['confirm_pass'];
-                                $email=$_POST['email'];
-                                $stmt = $db->prepare('SELECT email FROM admins WHERE email = :email');
-                                $stmt->execute(array(':email' => $email));
-                                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
                                 if($passwordAdmin!==$confpassword){
                                         echo '<p class="alert alert-danger" style="width:350px; height:auto;font-size:15px;"><i class="material-icons" style="margin-right:1%;font-size:18px;color:red">error</i>&nbsp;Confirm password does not match with password</p>'; 
                                        
@@ -112,10 +101,6 @@ require_once('includes/config.php');
                                         echo '<p class="alert alert-danger" style="width:350px; height:auto;font-size:15px;"><i class="material-icons" style="margin-right:1%;font-size:18px;color:red">error</i>&nbsp;Password is too short</p>'; 
                                      
 		                          }
-                                else if(!empty($row['email'])){
-                                    echo '<p class="alert alert-danger" style="width:350px; height:auto;font-size:15px;"><i class="material-icons" style="margin-right:1%;font-size:18px;color:red">error</i>&nbsp;Email provided is already in use</p>'; 
-			
-                                }
                                 else{
                                 $stmt = $db->prepare('SELECT usernameAdmin FROM admins WHERE usernameAdmin = :usernameAdmin');
                                 $stmt->execute(array(':usernameAdmin' => $usernameAdmin));
@@ -123,12 +108,96 @@ require_once('includes/config.php');
                                     
                                if(empty($row['usernameAdmin'])){
                                         //insert into database with a prepared statement
-				                    $stmt = $db->prepare('INSERT INTO admins (usernameAdmin,passwordAdmin,email) VALUES (:usernameAdmin, :passwordAdmin, :email)');
+                                    $bidcount=10;
+				                    $stmt = $db->prepare('INSERT INTO admins (usernameAdmin,passwordAdmin,bidcount) VALUES (:usernameAdmin, :passwordAdmin,:bidcount )');
 				                    $stmt->execute(array(
 					               ':usernameAdmin' => $usernameAdmin,
 					               ':passwordAdmin' => $passwordAdmin,
-                                   ':email' => $email,));
-                                  
+                                   ':bidcount' => $bidcount
+                                    ));
+                                   $id = $db->lastInsertId('adminID');
+                                   
+                                    $stmt = $db->prepare('INSERT INTO bids(adminID,topic,price,geography,blockedbypublisher)VALUES (:adminID,:topic,:price,:geography,:blockedbypublisher)');
+                                     $stmt->execute(array(
+                                            ':adminID' => $id,
+                                            ':topic' => "FashionandStyle",
+                                            ':price' => 1.5,
+                                            ':geography' =>"Cyprus",
+                                            ':blockedbypublisher' => false
+                                        ));
+                                      $stmt = $db->prepare('INSERT INTO bids(adminID,topic,price,geography,blockedbypublisher)VALUES (:adminID,:topic,:price,:geography,:blockedbypublisher)');
+                                     $stmt->execute(array(
+                                            ':adminID' => $id,
+                                            ':topic' => "Sports",
+                                            ':price' => 3.5,
+                                            ':geography' =>"Cyprus",
+                                            ':blockedbypublisher' => false
+                                        ));
+                                       $stmt = $db->prepare('INSERT INTO bids(adminID,topic,price,geography,blockedbypublisher)VALUES (:adminID,:topic,:price,:geography,:blockedbypublisher)');
+                                     $stmt->execute(array(
+                                            ':adminID' => $id,
+                                            ':topic' => "Beauty",
+                                            ':price' => 3.5,
+                                            ':geography' =>"Greece",
+                                            ':blockedbypublisher' => false
+                                        ));
+                                     $stmt = $db->prepare('INSERT INTO bids(adminID,topic,price,geography,blockedbypublisher)VALUES (:adminID,:topic,:price,:geography,:blockedbypublisher)');
+                                     $stmt->execute(array(
+                                            ':adminID' => $id,
+                                            ':topic' => "Pets",
+                                            ':price' => 1,
+                                            ':geography' =>"Cyprus",
+                                            ':blockedbypublisher' => false
+                                        ));
+                                    $stmt = $db->prepare('INSERT INTO bids(adminID,topic,price,geography,blockedbypublisher)VALUES (:adminID,:topic,:price,:geography,:blockedbypublisher)');
+                                     $stmt->execute(array(
+                                            ':adminID' => $id,
+                                            ':topic' => "News",
+                                            ':price' => 2,
+                                            ':geography' =>"France",
+                                            ':blockedbypublisher' => false
+                                        ));
+                                     $stmt = $db->prepare('INSERT INTO bids(adminID,topic,price,geography,blockedbypublisher)VALUES (:adminID,:topic,:price,:geography,:blockedbypublisher)');
+                                     $stmt->execute(array(
+                                            ':adminID' => $id,
+                                            ':topic' => "PersonalCare",
+                                            ':price' => 3.5,
+                                            ':geography' =>"UnitedKingdom",
+                                            ':blockedbypublisher' => false
+                                        ));
+                                    $stmt = $db->prepare('INSERT INTO bids(adminID,topic,price,geography,blockedbypublisher)VALUES (:adminID,:topic,:price,:geography,:blockedbypublisher)');
+                                     $stmt->execute(array(
+                                            ':adminID' => $id,
+                                            ':topic' => "Videogames",
+                                            ':price' => 1,
+                                            ':geography' =>"UnitedKingdom",
+                                            ':blockedbypublisher' => false
+                                        ));
+                                    $stmt = $db->prepare('INSERT INTO bids(adminID,topic,price,geography,blockedbypublisher)VALUES (:adminID,:topic,:price,:geography,:blockedbypublisher)');
+                                     $stmt->execute(array(
+                                            ':adminID' => $id,
+                                            ':topic' => "Food",
+                                            ':price' => 3.5,
+                                            ':geography' =>"Cyprus",
+                                            ':blockedbypublisher' => false
+                                        ));
+                                    $stmt = $db->prepare('INSERT INTO bids(adminID,topic,price,geography,blockedbypublisher)VALUES (:adminID,:topic,:price,:geography,:blockedbypublisher)');
+                                     $stmt->execute(array(
+                                            ':adminID' => $id,
+                                            ':topic' => "Health",
+                                            ':price' => 3.5,
+                                            ':geography' =>"Cyprus",
+                                            ':blockedbypublisher' => false
+                                        ));
+                                    $stmt = $db->prepare('INSERT INTO bids(adminID,topic,price,geography,blockedbypublisher)VALUES (:adminID,:topic,:price,:geography,:blockedbypublisher)');
+                                     $stmt->execute(array(
+                                            ':adminID' => $id,
+                                            ':topic' => "Motorcycles",
+                                            ':price' => 3.5,
+                                            ':geography' =>"Cyprus",
+                                            ':blockedbypublisher' => false
+                                        ));
+
                                   echo '<p class="alert alert-success" style="width:350px; height:auto;font-size:15px;"><i class="material-icons" style="margin-right:1%;font-size:18px;color:green">error</i>&nbsp;Registration successful</p>'; 
                                   
                                 }else {

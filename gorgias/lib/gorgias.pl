@@ -18,6 +18,8 @@
 
 :- assert(with_abduction(_)).
 
+:- compile('visualization').  %% nbassili
+
 /*
 
 exception_rule(Sig, Head, Body) :-
@@ -65,13 +67,12 @@ prove(Query, Delta) :-
 
 
 extend([], DeltaAcc, DeltaAcc).
-
 extend(Delta0, DeltaAcc, Delta) :-
 	isconsistent(Delta0),
 	findall(AttackNode, (attacks(_, 'A', Delta0, AttackNode)), AttackNodes),
 	union(Delta0, DeltaAcc, NewDeltaAcc),
 	counterattack(AttackNodes, NewDeltaAcc, Delta).
-	
+
 
 counterattack([], DeltaThis, DeltaThis).
 counterattack([AttackNode|Rest], DeltaThis, Delta) :-
@@ -81,15 +82,13 @@ counterattack([AttackNode|Rest], DeltaThis, Delta) :-
 
 counterattackone([], DeltaThis, DeltaThis).
 counterattackone(AttackNode, DeltaThis, Delta) :-
-
-%%	write('Attack:'), writeln(AttackNode),
+	%%write('Attack:'), writeln(AttackNode),
 	findall(DefenceNode, (attacks(_, 'D', AttackNode, DefenceNode), isconsistent(DeltaThis, DefenceNode)), DefenceNodes),
-
 	member(DefenceNode, DefenceNodes),
-
-%%	write('Defence:'), writeln(DefenceNode),
-
+	%%write('Defence:'), writeln(DefenceNode),
 	counterattackoneaux(DefenceNode, DeltaThis, Delta).
+
+
 
 
 /* Check if we have already "seen" DefenceNode. */
@@ -121,3 +120,4 @@ gorgias__prove_one(Query, Delta) :-
 
 gorgias__prove(Query,Delta) :-
 	prove([Query],Delta).
+

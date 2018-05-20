@@ -1,9 +1,10 @@
-ad(1,clothes,3.50,cy). %011 
-ad(2,sports,1.00,cy). %001 
-ad(3,cosmetics,3.50,en). %010 
-ad(4,pets,1.00,cy).  %101 
-ad(5,new,2.00,fr).  %000 
-ad(6,pets,3.50,en).  %110 
-ad(7,pets,1.0,en).  %100 
-ad(8,food,3.50,cy). %111 
-ad(9,health,3.50,cy). %111 
+ad(35,fashionandstyle,1.5,cyprus).
+ad(36,sports,3.5,cyprus).
+ad(37,beauty,3.5,greece).
+ad(38,pets,1,cyprus).
+ad(39,news,2,france).
+ad(40,personalcare,3.5,unitedkingdom).
+ad(41,videogames,1,unitedkingdom).
+ad(42,food,3.5,cyprus).
+ad(43,health,3.5,cyprus).
+ad(44,motorcycles,3.5,cyprus).

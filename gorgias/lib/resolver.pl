@@ -23,21 +23,47 @@ resolveone(Head, Acc, Acc) :-
 	member(Sig, Acc), !.
 */
 
+%% nbassili - moved first with cut
+resolveone(Goal, Acc, Acc) :-
+        predicate_property(Goal, built_in), !,
+        Goal.
+
 
 resolveone(Head, Acc, Resolvent) :-
+	%% nbassili
+	
+	( (rule(Sig, Head, Body),
+
+	   resolve(Body, [Sig|Acc], Resolvent)) *-> 
+	   
+	   	true ; 
+	   	
+	   	(once( with_abduction(Head) ),
+		 abducible(Head, []),
+		 Resolvent = [ass(Head)|Acc]
+		)
+    	).
+
+/*
+
+resolveone(Head, Acc, Resolvent) :-
+	%% nbassili
+	%not(abducible(Head, [])), !,
 	
 	rule(Sig, Head, Body),
 
 	resolve(Body, [Sig|Acc], Resolvent).
-
-resolveone(Goal, Acc, Acc) :-
-        predicate_property(Goal, built_in),
-        Goal.
-
-
+	
+	%% nbassili - cuts abducible if the defeasible fact is proven by a rule. 
+	%(abducible(Head, []) -> !; true).
 resolveone(Head, Acc, [ass(Head)|Acc]) :-
-	with_abduction(Head),
+	not( (rule(Sig, Head, Body), resolve(Body, [Sig|Acc], _Resolvent)) ),
+
+	%with_abduction(Head),
+	%% nbassili - when multiple policies exists this fact is loaded many times!
+	once( with_abduction(Head) ),
 	abducible(Head, []).
 
+*/
 
 

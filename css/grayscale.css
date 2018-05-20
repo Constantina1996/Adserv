@@ -28,6 +28,10 @@ footer{
         border-right:none;
         border-left:none;
 }
+
+input[type="checkbox"]{
+    margin:2px;
+}
 #register-client input[type=text]{
     width: 100px;
     height: 20px;
@@ -54,6 +58,7 @@ footer{
     margin-top:100px;
     background-color: #0e2f44 !important; 
 }
+
 #add-form{
     height:300px;
     color:black;
@@ -321,15 +326,6 @@ border-radius: 2px;
           height:auto;
 
 
-}
-#policyform{
-  
-    background-color: rgba(250,250,250,0.3) ;
-    width: 1000px;
-    height: auto;
-    font-size:15px;
-    text-align: left;
-    font-weight: bold;
 }
 
 #user{

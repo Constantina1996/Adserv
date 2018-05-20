@@ -53,12 +53,9 @@ if(!isset($_SESSION['adminID'])){
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
               <a class="nav-link js-scroll-trigger" href="memberpage.php#page-top"><i class="fa fa-home"></i> Home</a>
-            </li> 
-            <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" href="#memberpage.php#about"><i class="fa fa-info"></i> About us</a>
-            </li>    
+            </li>     
                <li class="nav-item">
-                   <a class="nav-link js-scroll-trigger" href="memberpage.php#contact"><i class="fa fa-phone"></i> Contact us</a>
+                   <a class="nav-link js-scroll-trigger" href="index.php#contact"><i class="fa fa-phone"></i> Contact us</a>
             </li>
               <li class="nav-item">
                    <a class="nav-link js-scroll-trigger" href="logout.php">Logout</a>
@@ -69,15 +66,18 @@ if(!isset($_SESSION['adminID'])){
     </nav>
 
 <!-- Intro Header -->
-    <header class="masthead" style="height:1400px">
-      <div class="intro-body">
-          <center><h3 class="omb_authTitle">Welcome to AD SERVER platform</h3></center> 
+    <header class="masthead" style="height:auto">
+      <div style="font-weight:bold;"class="intro-body">
+          <center><h3 style="padding-top:15%;"class="omb_authTitle">Welcome to AD SERVER platform</h3></center> 
       
-         <div id="bitsform" class="container">    
+         <div id="bitsform" class="container">   
+             <form action="" method="post">
+                           <button style="float:left; padding-top:8%;" type="submit" name="deletebids" href="#deletebids">Delete all</button></form>
           <form action="" method="post">
             <h6 style="padding-top:15px;font-size:15px;">Bids from advertisers</h6>
               <button style="float:right; padding:1%;" type="submit" name="deletebid" href="#deletebid"> <i style="font-size:20px;" class='fa fa-trash' aria-hidden="true"></i></button>
                 <a style="float:right; padding:1%;" id="decisionbtn" href="#addbid" onclick="document.getElementById('addbid').style.display='block'" ><i  style="font-size:20px;" class='fa fa-plus' aria-hidden="true"></i></a> 
+              
                        <table id="data">
                           <thead>
                               <tr>
@@ -140,7 +140,7 @@ if(!isset($_SESSION['adminID'])){
                     </script>
             
                 <br>
-                <center> <p id="errorbid" class="alert alert-danger" style="display:none; width:250px; height:auto;font-size:15px;">You have to add a new bid</p></center> <br>
+                <center> <p id="errorbid" class="alert alert-danger" style="display:none; width:280px; height:auto;font-size:15px;">You have no bids to delete </p></center> <br>
              </form>   
              </div>
                 
@@ -154,7 +154,8 @@ if(!isset($_SESSION['adminID'])){
                           echo "<script>document.getElementById('errorbid').style.display='block';</script>";
                       else{
                                  $bidID=$_POST['bid'];
-                                 $stmt = $db->prepare('Delete FROM bids WHERE adminID = :adminID AND bidID=:bidID');               $stmt->bindParam(':adminID',$adminID);
+                                 $stmt = $db->prepare('Delete FROM bids WHERE adminID = :adminID AND bidID=:bidID');              
+								 $stmt->bindParam(':adminID',$adminID);
                                  $stmt->bindParam(':bidID',$bidID);
                                  $stmt->execute();
                                  $stmt = $db->prepare('SELECT bidcount FROM admins WHERE adminID=:adminID;');
@@ -166,6 +167,25 @@ if(!isset($_SESSION['adminID'])){
                                  $stmt = $db->prepare('UPDATE admins SET bidcount=:bidcount WHERE adminID=:adminID;');
                                  $stmt->bindParam(':adminID', $adminID);
                                  $stmt->bindParam(':bidcount', $bidcount);
+                                 $stmt->execute();
+			                     echo  "<script> window.location.href='memberpage.php';</script>";
+                      }
+                }
+          if(isset($_POST['deletebids'])){
+                       $stmt = $db->prepare('SELECT * FROM bids WHERE adminID = :adminID');
+                       $stmt->bindParam(':adminID',$adminID);
+                       $stmt->execute();	                      
+                       $row = $stmt->fetch(PDO::FETCH_ASSOC);  	
+                      if(!$row)
+                          echo "<script>document.getElementById('errorbid').style.display='block';</script>";
+                      else{
+                                 $stmt = $db->prepare('Delete FROM bids WHERE adminID = :adminID');              
+								 $stmt->bindParam(':adminID',$adminID);
+                                 $stmt->execute();
+                                 $c=0;
+                                 $stmt = $db->prepare('UPDATE admins SET bidcount=:bidcount WHERE adminID=:adminID;');
+                                 $stmt->bindParam(':adminID', $adminID);
+                                 $stmt->bindParam(':bidcount', $c);
                                  $stmt->execute();
 			                     echo  "<script> window.location.href='memberpage.php';</script>";
                       }
@@ -194,7 +214,7 @@ if(!isset($_SESSION['adminID'])){
                               <tr>
                                 <th class="table-header">User ID</th>
                                 <th class="table-header">Gender</th>
-                                <th class="table-header">Category of user</th>
+                                <th class="table-header">Interests of user</th>
                                 <th class="table-header">Age</th>
                                 <th class="table-header">Geography</th>
                               </tr>
@@ -278,26 +298,11 @@ if(!isset($_SESSION['adminID'])){
                         }
                   }
                 ?>
-             <div id="policyform" class="container"> 
                  <form action="" method="post">
-                             <h6  style="padding-top:15px;font-size:15px;text-align:center;font-size:15px;">Choose a policy</h6>
-
-                            <label for="1"> Policy 1</label><br>
-                                       <input type="radio" name="policy" value="1" id="1" class="radiobtn"  /><p style="display:inline;font-size:15px;"> This policy prefers ads on user interests and high price</p><br><br>
-                                    <label for="2"> Policy 2</label><br>
-                                  <input type="radio" name="policy" value="2" id="2"  class="radiobtn"  /><p style="display:inline;font-size:15px;"> This policy prefers ads with high price</p><br><br>
-                                   <label for="3"> Policy 3</label><br>
-                                 <input type="radio" name="policy" value="3" id="3" class="radiobtn" /><p style="font-size:15px;display:inline;"> This policy prefers ads on user interests and user geography</p>
-                  <br>
-                    <br>
-             <center> <p id="errorpolicy" class="alert alert-danger" style="display:none; width:250px; height:auto;font-size:15px;">You have to select a policy</p></center> <br>
-                      <center> <p id="errorpolicy" class="alert alert-danger" style="display:none; width:250px; height:auto;font-size:15px;">You have to add at least one bid </p></center> <br>
-              <center>  <input style="background-color:#C0C0C0; color:black;" id="decisionbtn "class="btn btn-default" type="submit" name="submit" value="submit"/></center><br> 
+                 <center>    <input style="background-color:#C0C0C0; color:black;" id="decisionbtn "class="btn btn-default" type="submit" name="submit" value="submit"/></center><br> 
             </form>
-           </div>    
               <?php 
                  if(isset($_POST['submit'])) {
-                    if(isset($_POST['policy'])){
                               $stmt = $db->prepare('SELECT * FROM bids WHERE adminID = :adminID');
                                $stmt->bindParam(':adminID',$adminID);
                                $stmt->execute();	                      
@@ -305,6 +310,11 @@ if(!isset($_SESSION['adminID'])){
                               if(!$row)
                                   echo "<script>document.getElementById('errorbid1').style.display='block';</script>";
                              else{
+                                 $policy1[]=null;	
+                                 $policy2[]=null;	
+                                 $policy3[]=null;	
+                        
+                           
                             $stmt = $db->prepare('SELECT * FROM users WHERE adminID = :adminID');
                             $stmt->bindParam(':adminID', $adminID);
                             $stmt->execute();
@@ -352,24 +362,11 @@ if(!isset($_SESSION['adminID'])){
                             fwrite($handle, "\n");  
                                 
                             }
-
-                           //write policy in predicates.pl
-                                if ($_POST['policy'] == 1) 
-                                    $fwrite = fwrite($handle, "policy(1)");
-                                 else if ($_POST['policy'] == 2) 
-                                    $fwrite = fwrite($handle, "policy(2)");
-                                 else if ($_POST['policy'] == 3) 
-                                    $fwrite = fwrite($handle, "policy(3)");
-                                
-                                fwrite($handle, ".\n");
-                         
-
-
                             if ($sex == "F"){
-                                $fwrite = fwrite($handle, "sex(f)");
+                                $fwrite = fwrite($handle, "sex(fe)");
                                    fwrite($handle, ".\n");}
                             else if($sex == "M"){
-                                $fwrite = fwrite($handle, "sex(m)");
+                                $fwrite = fwrite($handle, "sex(ma)");
                                    fwrite($handle, ".\n");}
                             else if($sex=="O"){
                                   $fwrite = fwrite($handle, "sex(o)");
@@ -384,27 +381,33 @@ if(!isset($_SESSION['adminID'])){
                                $stmt->execute();	                      
                                  $result = $stmt->fetch(PDO::FETCH_ASSOC);
                                  $bidcount=$result['bidcount'];
-                                 
-                               $stmt = $db->prepare('SELECT bidID,blockedbypublisher FROM bids WHERE adminID = :adminID');
-                               $stmt->bindParam(':adminID',$adminID);
-                               $stmt->execute();	                      
-                                $i=1;
-                        fwrite($handle, "adList([");
-                            while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                                if($result['blockedbypublisher']==false){
-                                    if($i!=$bidcount)
-                                        fwrite($handle, $result['bidID'] . ",");
-                                    else
-                                         fwrite($handle, $result['bidID']);
-                                    }
-                                $i++;
                                
-                            }
-                        fwrite($handle,"");
-                        fwrite($handle,"]).");
-                                 
-                                    fwrite($handle,"\n");
-                             
+								   $stmt = $db->prepare('SELECT bidID,blockedbypublisher FROM bids WHERE adminID = :adminID');
+								   $stmt->bindParam(':adminID',$adminID);
+								   $stmt->execute();	                      
+                                
+								$bid[]=null;
+								$blocked[]=null;
+								$i=0;
+								while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+									if($result['blockedbypublisher']==false){
+								$bid[$i] = $result['bidID'];
+								$i++;}
+								
+								}
+								fwrite($handle, "adList([");
+								for($i=0;$i<count($bid);$i++){
+									if($i!=count($bid)-1)
+										fwrite($handle, $bid[$i].",");
+									
+									else if($i==count($bid)-1)
+										fwrite($handle, $bid[$i]);
+								}
+                            if($handle[count($handle)-4]==",")
+								fwrite($handle[count($handle)-4],"]).");
+							else
+							fwrite($handle, "]).");
+							
                             $my_file2 = './gorgias/decisionMaking/bids.pl';
                             $handle2 = fopen($my_file2, 'w') or die('Cannot open file:' . $my_file2);
                                $stmt = $db->prepare('SELECT * FROM bids WHERE adminID = :adminID');
@@ -412,52 +415,133 @@ if(!isset($_SESSION['adminID'])){
                                $stmt->execute();	
                               
                                while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+								   if($result['blockedbypublisher']==false){
                                     $geography=strtolower($result['geography']); 
                                     $topic=strtolower($result['topic']); 
                                    $fwrite = fwrite($handle2, "ad(".$result["bidID"].",".$topic.",".$result['price'].",".$geography.").");
                                     $fwrite = fwrite($handle2, "\n");
+								   }
                                }
-
+                            
+                           for($w=1;$w<4;$w++){
+                                $pol = './gorgias/decisionMaking/policy.pl';
+                                    $handle4 = fopen($pol, 'w') or die('Cannot open file:' . $pol);
+                                if ($w == 1) {
+                                     
+                                    
+                                    $fwrite = fwrite($handle4, "policy(1)");
+                                    
+                                }
+                                 else if ($w == 2) {
+                                  
+                                    $fwrite = fwrite($handle4, "policy(2)");
+                                     
+                                     }
+                                 else if ($w == 3){ 
+                                      
+                                    $fwrite = fwrite($handle4, "policy(3)");
+                                }
+                                fwrite($handle4, ".\n");
                             $stmt = $db->prepare('SELECT * FROM bids WHERE adminID = :adminID');
                                $stmt->bindParam(':adminID',$adminID);
                                $stmt->execute();	                      
                                $i=0;
-                               $arrayx[]=null;
+                               
                                while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
                                     $secfil = 'executeGorgias.pl';
-                                    $handle = fopen($secfil, 'w') or die('Cannot open file:' . $secfil);
-                                    fwrite($handle, ":-consult('./gorgias/decisionMaking/adDecision.pl').");
-                                    fwrite($handle, "\n");
-                                    fwrite($handle, "askGorgias:-prove([show(ad,".$result['bidID'].")],Delta),write(1).");
-                                    fwrite($handle, "\n");
-                                    fwrite($handle, 'askGorgias:-write("false").');
+                                    $handle3 = fopen($secfil, 'w') or die('Cannot open file:' . $secfil);
+                                    fwrite($handle3, ":-consult('./gorgias/decisionMaking/adDecision.pl').");
+                                    fwrite($handle3, "\n");
+                                    fwrite($handle3, "askGorgias:-visual_prove([show(".$result['bidID'].")],Delta,[failed(true)]),write(=),write(Delta).");
+                                    fwrite($handle3, "\n");   
                                     $cmd = "C:\\xampp\htdocs\AdServer\swipl\bin\swipl.exe -f executeGorgias.pl -g askGorgias,halt";
+                           
                                     $output = shell_exec(escapeshellcmd($cmd));
-                                    if ($output == 1) {
-                                        $arrayx[$i]=$result['bidID'];
-                                        $i++;
+                                    $pieces = explode("=", $output);
+                                    
+                                  
+                                  if ($pieces[count($pieces)-1]!="FAIL") {
+                                      if($w==1){
+                                      $policy1[$i]=$result['bidID'];
+                                       $i++;}
+                                       if($w==2){
+                                           $policy2[$i]=$result['bidID'];
+                                       $i++;}
+                                       if($w==3){
+                                         $policy3[$i]=$result['bidID'];
+                                       $i++;
+									   
                                     }
+                                   }
+								 
+                                  /* if ($output==1) {
+                                       if($w==1){
+                                      $policy1[$i]=$result['bidID'];
+                                       $i++;}
+                                       if($w==2){
+                                           $policy2[$i]=$result['bidID'];
+                                       $i++;}
+                                       if($w==3){
+                                         $policy3[$i]=$result['bidID'];
+                                       $i++;
+                                       } 
+                                  }*/
                                 }
+                            }
+                        
                                  ?>
                             <div id="winner"  class="w3-modal"  href="https://www.w3schools.com/w3css/4/w3.css">
-                                <div class="w3-modal-content w3-animate-zoom" style="max-width:330px;height:300px;">
+                                <div class="w3-modal-content w3-animate-zoom" style="max-width:550px;height:2000px;">
                                     <div class="w3-container w3-teal">
                                         <span style="height:40px; padding-bottom:1%" onclick="document.getElementById('winner').style.display='none'" class="w3-button w3-display-topright w3-large">x</span>
-                                        <h3 style="margin-top:2%;">Winners bids are!</h3>
+                                        <h3 style="margin-top:2%;">Winners are!</h3>
                                         <div class="container">    
-                                           
+                                          <b style="color:black">Policy 1</b> <br><br>
                                         <?php
                                  
-                                            for($i=0; $i<sizeof($arrayx);$i++){
-                                              $stmt = $db->prepare('SELECT * FROM bids WHERE adminID = :adminID AND bidID = :bidID');
-                                           $stmt->bindParam(':adminID',$adminID);
-                                         $stmt->bindParam(':bidID',$arrayx[$i]);
-                                       $stmt->execute();	
+                                           for($i=0; $i<sizeof($policy1);$i++){
+                                          $stmt = $db->prepare('SELECT * FROM bids WHERE adminID = :adminID AND bidID = :bidID');
+                                          $stmt->bindParam(':adminID',$adminID);
+                                          $stmt->bindParam(':bidID',$policy1[$i]);
+                                          $stmt->execute();	
                                           $result = $stmt->fetch(PDO::FETCH_ASSOC);
                                           if(!$result)
-                                               echo "<p style='color:black;'>Νone of these bits won because they were blocked by publisher!!";
-                                        else
-                                          echo "<p style='color:black;'><label>Bit ".$arrayx[$i]." with topic ".$result['topic'].", price ".$result['price']."euro and geography ".$result['geography']."</p>";
+                                               echo "<p style='color:black;'>Νone of these bits won because they were blocked by publisher!!</p>";
+                                          else
+                                               echo "<p style='color:black;'><label>Bid ".$policy1[$i]." with topic ".$result['topic'].", price ".$result['price']."euro and geography ".$result['geography']."</p>";
+                                               
+                                      }
+                                    ?><br>
+                                         <b style="color:black">Policy 2</b> <br><br>
+                                            <?php
+                                 
+                                           for($i=0; $i<sizeof($policy2);$i++){
+                                          $stmt = $db->prepare('SELECT * FROM bids WHERE adminID = :adminID AND bidID = :bidID');
+                                          $stmt->bindParam(':adminID',$adminID);
+                                          $stmt->bindParam(':bidID',$policy2[$i]);
+                                          $stmt->execute();	
+                                          $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                                          if(!$result)
+                                               echo "<p style='color:black;'>Νone of these bits won because they were blocked by publisher!!</p>";
+                                          else
+                                               echo "<p style='color:black;'><label>Bid ".$policy2[$i]." with topic ".$result['topic'].", price ".$result['price']."euro and geography ".$result['geography']."</p>";
+                                               
+                                      }
+                                    ?> 
+                                         <br>    <b style="color:black">Policy 3</b> <br><br>
+                                            <?php
+                                 
+                                           for($i=0; $i<sizeof($policy3);$i++){
+                                          $stmt = $db->prepare('SELECT * FROM bids WHERE adminID = :adminID AND bidID = :bidID');
+                                          $stmt->bindParam(':adminID',$adminID);
+                                          $stmt->bindParam(':bidID',$policy3[$i]);
+                                          $stmt->execute();	
+                                          $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                                          if(!$result)
+                                               echo "<p style='color:black;'>Νone of these bits won because they were blocked by publisher!!</p>";
+                                          else
+                                               echo "<p style='color:black;'><label>Bid ".$policy3[$i]." with topic ".$result['topic'].", price ".$result['price']."euro and geography ".$result['geography']."</p>";
+                                               
                                       }
                                     ?>
                                 </div>                                   
@@ -468,17 +552,14 @@ if(!isset($_SESSION['adminID'])){
                                echo "<script>document.getElementById('winner').style.display='block';</script>";
            
                            }
-                        }
-                else{
-                    echo "<script>document.getElementById('errorpolicy').style.display='block';</script>";
-                    
-                }
+                        
+                
             }
             ?>
         
          </div>     
         <div id="adduser"  class="w3-modal"  href="https://www.w3schools.com/w3css/4/w3.css">
-                        <div class="w3-modal-content w3-animate-zoom" style="max-width:450px; height:740px;">
+                        <div class="w3-modal-content w3-animate-zoom" style="max-width:450px; height:830px;">
                             <div class="w3-container w3-teal">
                                 <span style="height:40px; padding-bottom:1%" onclick="document.getElementById('adduser').style.display='none'" class="w3-button w3-display-topright w3-large">x</span>
                                 <h3 style="margin-top:2%;">Add a user!</h3>
@@ -492,30 +573,30 @@ if(!isset($_SESSION['adminID'])){
                                     <div id="add"><label for="gender">Gender</label>
                                         <div style="float:right;padding-left:3%;"><input name="gender" type="radio" value="F"><label  style="padding-left:2%">Female</label></div><div style="float:right;padding-left:3%;"><input  name="gender" type="radio" value="M"><label  style="padding-left:2%"> Male </label></div><div style="float:right;padding-left:3%;"><input name="gender" type="radio" value="O"><label  style="padding-left:2%"> Other </label></div></div>
                                     <br>
-                                   <div id="add"> <label for="keywords" >Category of user</label><span class="error">*</span>
-                                    <div id="checkboxx"> <input type="checkbox" name="Food" value="Food"/>Food lover</div><br>
-                                       <div id="checkboxx"> <input  type="checkbox" name="News" value="News" />News lover</div><br>
-                                       <div id="checkboxx"> <input  type="checkbox" name="Entertainment" value="Entertainment"/>Entertainment lover</div><br>
-                                       <div id="checkboxx">   <input  type="checkbox" name="Beauty" value="Beauty"/>Beauty lover</div><br>
-                                       <div id="checkboxx"><input  type="checkbox" name="Personal" value="Personal Care"/>Personal Care lover</div><br>
-                                       <div id="checkboxx"> <input  type="checkbox" name="Travel" value="Travel"/>Travel lover</div><br>
-                                       <div id="checkboxx">  <input  type="checkbox" name="Health" value="Health"/>Health lover </div><br>
-                                       <div id="checkboxx"> <input  type="checkbox" name="Fitness" value="Fitness"/>Fitness lover</div><br>
+                                   <div id="add"> <label for="keywords" >Interests of user</label>
+                                    <div id="checkboxx"> <input type="checkbox" name="Food" value="Food"/>Food </div><br>
+                                       <div id="checkboxx"> <input  type="checkbox" name="News" value="News" />News </div><br>
+                                       <div id="checkboxx"> <input  type="checkbox" name="Entertainment" value="Entertainment"/>Entertainment </div><br>
+                                       <div id="checkboxx">   <input  type="checkbox" name="Beauty" value="Beauty"/>Beauty </div><br>
+                                       <div id="checkboxx"><input  type="checkbox" name="Personal" value="PersonalCare"/>Personal Care</div><br>
+                                       <div id="checkboxx"> <input  type="checkbox" name="Travel" value="Travel"/>Travel </div><br>
+                                       <div id="checkboxx">  <input  type="checkbox" name="Health" value="Health"/>Health  </div><br>
+                                       <div id="checkboxx"> <input  type="checkbox" name="Fitness" value="Fitness"/>Fitness </div><br>
                                            <div id="checkboxx">    <input  type="checkbox" name="Sports" value="Sports"/>Sports lover</div><br>
-                                       <div id="checkboxx"> <input  type="checkbox" name="Pets" value="Pets"/>Pets lover</div><br>
-                                           <div id="checkboxx">  <input  type="checkbox" name="Art" value="Art"/>Art lover</div><br>
-                                          <div id="checkboxx">   <input  type="checkbox" name="Cars" value="Cars"/>Cars lover</div><br>
-                                         <div id="checkboxx">  <input  type="checkbox" name="Motorcycles" value="Motorcycles"/>Motorcycles lover</div><br>
-                                          <div id="checkboxx">   <input  type="checkbox" name="Family" value="Family and Parenting"/>Family lover</div><br>
+                                       <div id="checkboxx"> <input  type="checkbox" name="Pets" value="Pets"/>Pets </div><br>
+                                           <div id="checkboxx">  <input  type="checkbox" name="Art" value="Art"/>Art </div><br>
+                                          <div id="checkboxx">   <input  type="checkbox" name="Cars" value="Cars"/>Cars </div><br>
+                                         <div id="checkboxx">  <input  type="checkbox" name="Motorcycles" value="Motorcycles"/>Motorcycles </div><br>
+                                          <div id="checkboxx">   <input  type="checkbox" name="Family" value="FamilyandParenting"/>Family </div><br>
                                          <div id="checkboxx">   <input  type="checkbox" name="Drinks" value="Drinks"/>Drinks lover</div><br>
-                                         <div id="checkboxx">     <input  type="checkbox" name="Home" value="Home and Garden"/>Home &amp; Garden lover</div><br>
-                                       <div id="checkboxx">     <input  type="checkbox" name="wedding" value="Weddings"/>Weddings lover</div><br>
-                                       <div id="checkboxx">    <input  type="checkbox" name="business" value="Business"/>Marketing lover</div><br>
-                                        <div id="checkboxx">    <input  type="checkbox" name="com" value="Computers and Technology"/>Computers &amp; Technology lover</div><br>
-                                        <div id="checkboxx">     <input  type="checkbox" name="sc" value="Science"/>Science lover</div><br>
-                                       <div id="checkboxx">    <input  type="checkbox" name="video" value="Video games"/>Video Games lover</div>
-                                        <div id="checkboxx">    <input  type="checkbox" name="fashion" value="Fashion and Style"/>Fashion &amp; Style lover</div> 
-                                       <div id="checkboxx">    <input  type="checkbox" name="education" value="Education"/>Education</div>
+                                         <div id="checkboxx">     <input  type="checkbox" name="Home" value="HomeandGarden"/>Home &amp; Garden </div><br>
+                                       <div id="checkboxx">     <input  type="checkbox" name="wedding" value="Weddings"/>Weddings </div><br>
+                                       <div id="checkboxx">    <input  type="checkbox" name="business" value="Business"/>Marketing </div><br>
+                                        <div id="checkboxx">    <input  type="checkbox" name="com" value="ComputersandTechnology"/>Computers &amp; Technology </div><br>
+                                        <div id="checkboxx">     <input  type="checkbox" name="sc" value="Science"/>Science </div><br>
+                                       <div id="checkboxx">    <input  type="checkbox" name="video" value="Videogames"/>Video Games </div><br>
+                                        <div id="checkboxx">    <input  type="checkbox" name="fashion" value="FashionandStyle"/>Fashion &amp; Style </div><br> 
+                                       <div id="checkboxx">    <input  type="checkbox" name="education" value="Education"/>Education</div><br>
                                      </div>  
                                     <br>
                                     <div id="add"><label for="age">Age</label>
@@ -523,19 +604,12 @@ if(!isset($_SESSION['adminID'])){
                                     <br>
                                    <div id="add"> <label for="geography" >Geography</label>
                                       <select name='country' class='dropdown' style="width:182px; height:25px; color:black;">
-                                        <option disabled selected value> -- one option -- </option>
-                                        <option value="Afghanistan">Afghanistan</option>
+                                        <option disabled selected value> -- select one option -- </option>
+                                         <option value="Afghanistan">Afghanistan</option>
                                         <option value="Albania">Albania</option>
                                         <option value="Algeria">Algeria</option>
-                                        <option value="American Samoa">American Samoa</option>
-                                        <option value="Andorra">Andorra</option>
-                                        <option value="Angola">Angola</option>
-                                        <option value="Anguilla">Anguilla</option>
-                                        <option value="Antartica">Antarctica</option>
-                                        <option value="Antigua and Barbuda">Antigua and Barbuda</option>
                                         <option value="Argentina">Argentina</option>
                                         <option value="Armenia">Armenia</option>
-                                        <option value="Aruba">Aruba</option>
                                         <option value="Australia">Australia</option>
                                         <option value="Austria">Austria</option>
                                         <option value="Azerbaijan">Azerbaijan</option>
@@ -545,65 +619,30 @@ if(!isset($_SESSION['adminID'])){
                                         <option value="Barbados">Barbados</option>
                                         <option value="Belarus">Belarus</option>
                                         <option value="Belgium">Belgium</option>
-                                        <option value="Belize">Belize</option>
-                                        <option value="Benin">Benin</option>
-                                        <option value="Bermuda">Bermuda</option>
-                                        <option value="Bhutan">Bhutan</option>
-                                        <option value="Bolivia">Bolivia</option>
-                                        <option value="Bosnia and Herzegowina">Bosnia and Herzegowina</option>
-                                        <option value="Botswana">Botswana</option>
-                                        <option value="Bouvet Island">Bouvet Island</option>
+                                       <option value="Bermuda">Bermuda</option>
                                         <option value="Brazil">Brazil</option>
-                                        <option value="British Indian Ocean Territory">British Indian Ocean Territory</option>
-                                        <option value="Brunei Darussalam">Brunei Darussalam</option>
                                         <option value="Bulgaria">Bulgaria</option>
-                                        <option value="Burkina Faso">Burkina Faso</option>
-                                        <option value="Burundi">Burundi</option>
-                                        <option value="Cambodia">Cambodia</option>
-                                        <option value="Cameroon">Cameroon</option>
                                         <option value="Canada">Canada</option>
-                                        <option value="Cape Verde">Cape Verde</option>
-                                        <option value="Cayman Islands">Cayman Islands</option>
-                                        <option value="Central African Republic">Central African Republic</option>
-                                        <option value="Chad">Chad</option>
                                         <option value="Chile">Chile</option>
                                         <option value="China">China</option>
-                                        <option value="Christmas Island">Christmas Island</option>
-                                        <option value="Cocos Islands">Cocos (Keeling) Islands</option>
                                         <option value="Colombia">Colombia</option>
                                         <option value="Comoros">Comoros</option>
                                         <option value="Congo">Congo</option>
-                                        <option value="Congo">Congo, the Democratic Republic of the</option>
-                                        <option value="Cook Islands">Cook Islands</option>
-                                        <option value="Costa Rica">Costa Rica</option>
-                                        <option value="Cota DIvoire">Cote dIvoire</option>
+                                       <option value="CostaRica">Costa Rica</option>
                                         <option value="Croatia">Croatia (Hrvatska)</option>
                                         <option value="Cuba">Cuba</option>
                                         <option value="Cyprus">Cyprus</option>
-                                        <option value="Czech Republic">Czech Republic</option>
+                                        <option value="CzechRepublic">Czech Republic</option>
                                         <option value="Denmark">Denmark</option>
                                         <option value="Djibouti">Djibouti</option>
                                         <option value="Dominica">Dominica</option>
-                                        <option value="Dominican Republic">Dominican Republic</option>
-                                        <option value="East Timor">East Timor</option>
-                                        <option value="Ecuador">Ecuador</option>
+                                        <option value="DominicanRepublic">Dominican Republic</option>
                                         <option value="Egypt">Egypt</option>
-                                        <option value="El Salvador">El Salvador</option>
-                                        <option value="Equatorial Guinea">Equatorial Guinea</option>
-                                        <option value="Eritrea">Eritrea</option>
                                         <option value="Estonia">Estonia</option>
                                         <option value="Ethiopia">Ethiopia</option>
-                                        <option value="Falkland Islands">Falkland Islands (Malvinas)</option>
-                                        <option value="Faroe Islands">Faroe Islands</option>
-                                        <option value="Fiji">Fiji</option>
+                                       <option value="Fiji">Fiji</option>
                                         <option value="Finland">Finland</option>
                                         <option value="France">France</option>
-                                        <option value="France Metropolitan">France, Metropolitan</option>
-                                        <option value="French Guiana">French Guiana</option>
-                                        <option value="French Polynesia">French Polynesia</option>
-                                        <option value="French Southern Territories">French Southern Territories</option>
-                                        <option value="Gabon">Gabon</option>
-                                        <option value="Gambia">Gambia</option>
                                         <option value="Georgia">Georgia</option>
                                         <option value="Germany">Germany</option>
                                         <option value="Ghana">Ghana</option>
@@ -615,13 +654,7 @@ if(!isset($_SESSION['adminID'])){
                                         <option value="Guam">Guam</option>
                                         <option value="Guatemala">Guatemala</option>
                                         <option value="Guinea">Guinea</option>
-                                        <option value="Guinea-Bissau">Guinea-Bissau</option>
-                                        <option value="Guyana">Guyana</option>
-                                        <option value="Haiti">Haiti</option>
-                                        <option value="Heard and McDonald Islands">Heard and Mc Donald Islands</option>
-                                        <option value="Holy See">Holy See (Vatican City State)</option>
-                                        <option value="Honduras">Honduras</option>
-                                        <option value="Hong Kong">Hong Kong</option>
+                                        <option value="HongKong">Hong Kong</option>
                                         <option value="Hungary">Hungary</option>
                                         <option value="Iceland">Iceland</option>
                                         <option value="India">India</option>
@@ -637,128 +670,57 @@ if(!isset($_SESSION['adminID'])){
                                         <option value="Kazakhstan">Kazakhstan</option>
                                         <option value="Kenya">Kenya</option>
                                         <option value="Kiribati">Kiribati</option>
-                                        <option value="Democratic Peoples Republic of Korea">Korea, Democratic People Republic of</option>
                                         <option value="Korea">Korea, Republic of</option>
-                                        <option value="Kuwait">Kuwait</option>
-                                        <option value="Kyrgyzstan">Kyrgyzstan</option>
-                                        <option value="Lao">Lao People Democratic Republic</option>
                                         <option value="Latvia">Latvia</option>
-                                        <option value="Lebanon">Lebanon</option>
-                                        <option value="Lesotho">Lesotho</option>
-                                        <option value="Liberia">Liberia</option>
-                                        <option value="Libyan Arab Jamahiriya">Libyan Arab Jamahiriya</option>
-                                        <option value="Liechtenstein">Liechtenstein</option>
-                                        <option value="Lithuania">Lithuania</option>
+                                       <option value="Lithuania">Lithuania</option>
                                         <option value="Luxembourg">Luxembourg</option>
-                                        <option value="Macau">Macau</option>
-                                        <option value="Macedonia">Macedonia, The Former Yugoslav Republic of</option>
                                         <option value="Madagascar">Madagascar</option>
-                                        <option value="Malawi">Malawi</option>
-                                        <option value="Malaysia">Malaysia</option>
                                         <option value="Maldives">Maldives</option>
-                                        <option value="Mali">Mali</option>
-                                        <option value="Malta">Malta</option>
-                                        <option value="Marshall Islands">Marshall Islands</option>
-                                        <option value="Martinique">Martinique</option>
-                                        <option value="Mauritania">Mauritania</option>
-                                        <option value="Mauritius">Mauritius</option>
-                                        <option value="Mayotte">Mayotte</option>
+                                       <option value="Malta">Malta</option>
                                         <option value="Mexico">Mexico</option>
-                                        <option value="Micronesia">Micronesia, Federated States of</option>
-                                        <option value="Moldova">Moldova, Republic of</option>
+                                      <option value="Moldova">Moldova, Republic of</option>
                                         <option value="Monaco">Monaco</option>
                                         <option value="Mongolia">Mongolia</option>
-                                        <option value="Montserrat">Montserrat</option>
                                         <option value="Morocco">Morocco</option>
                                         <option value="Mozambique">Mozambique</option>
                                         <option value="Myanmar">Myanmar</option>
                                         <option value="Namibia">Namibia</option>
-                                        <option value="Nauru">Nauru</option>
-                                        <option value="Nepal">Nepal</option>
                                         <option value="Netherlands">Netherlands</option>
-                                        <option value="Netherlands Antilles">Netherlands Antilles</option>
-                                        <option value="New Caledonia">New Caledonia</option>
-                                        <option value="New Zealand">New Zealand</option>
-                                        <option value="Nicaragua">Nicaragua</option>
-                                        <option value="Niger">Niger</option>
+                                        <option value="NewZealand">New Zealand</option>
                                         <option value="Nigeria">Nigeria</option>
-                                        <option value="Niue">Niue</option>
-                                        <option value="Norfolk Island">Norfolk Island</option>
-                                        <option value="Northern Mariana Islands">Northern Mariana Islands</option>
                                         <option value="Norway">Norway</option>
-                                        <option value="Oman">Oman</option>
                                         <option value="Pakistan">Pakistan</option>
-                                        <option value="Palau">Palau</option>
-                                        <option value="Panama">Panama</option>
-                                        <option value="Papua New Guinea">Papua New Guinea</option>
-                                        <option value="Paraguay">Paraguay</option>
                                         <option value="Peru">Peru</option>
                                         <option value="Philippines">Philippines</option>
-                                        <option value="Pitcairn">Pitcairn</option>
                                         <option value="Poland">Poland</option>
                                         <option value="Portugal">Portugal</option>
-                                        <option value="Puerto Rico">Puerto Rico</option>
-                                        <option value="Qatar">Qatar</option>
-                                        <option value="Reunion">Reunion</option>
+                                        <option value="PuertoRico">Puerto Rico</option>
                                         <option value="Romania">Romania</option>
-                                        <option value="Russia">Russian Federation</option>
-                                        <option value="Rwanda">Rwanda</option>
-                                        <option value="Saint Kitts and Nevis">Saint Kitts and Nevis</option> 
-                                        <option value="Saint LUCIA">Saint LUCIA</option>
-                                        <option value="Saint Vincent">Saint Vincent and the Grenadines</option>
-                                        <option value="Samoa">Samoa</option>
-                                        <option value="San Marino">San Marino</option>
-                                        <option value="Sao Tome and Principe">Sao Tome and Principe</option> 
-                                        <option value="Saudi Arabia">Saudi Arabia</option>
-                                        <option value="Senegal">Senegal</option>
+                                        <option value="Russia">Russia</option>
+                                        <option value="SanMarino">San Marino</option>
+                                        <option value="SaudiArabia">Saudi Arabia</option>
                                         <option value="Seychelles">Seychelles</option>
-                                        <option value="Sierra">Sierra Leone</option>
                                         <option value="Singapore">Singapore</option>
                                         <option value="Slovakia">Slovakia (Slovak Republic)</option>
                                         <option value="Slovenia">Slovenia</option>
-                                        <option value="Solomon Islands">Solomon Islands</option>
-                                        <option value="Somalia">Somalia</option>
-                                        <option value="South Africa">South Africa</option>
-                                        <option value="South Georgia">South Georgia and the South Sandwich Islands</option>
-                                        <option value="Span">Spain</option>
+                                        <option value="SouthAfrica">South Africa</option>
+                                        <option value="SouthGeorgia">South Georgia and the South Sandwich Islands</option>
+                                        <option value="Spain">Spain</option>
                                         <option value="SriLanka">Sri Lanka</option>
-                                        <option value="St. Helena">St. Helena</option>
-                                        <option value="St. Pierre and Miguelon">St. Pierre and Miquelon</option>
-                                        <option value="Sudan">Sudan</option>
-                                        <option value="Suriname">Suriname</option>
-                                        <option value="Svalbard">Svalbard and Jan Mayen Islands</option>
-                                        <option value="Swaziland">Swaziland</option>
                                         <option value="Sweden">Sweden</option>
                                         <option value="Switzerland">Switzerland</option>
                                         <option value="Syria">Syrian Arab Republic</option>
-                                        <option value="Taiwan">Taiwan, Province of China</option>
-                                        <option value="Tajikistan">Tajikistan</option>
                                         <option value="Tanzania">Tanzania, United Republic of</option>
                                         <option value="Thailand">Thailand</option>
-                                        <option value="Togo">Togo</option>
-                                        <option value="Tokelau">Tokelau</option>
-                                        <option value="Tonga">Tonga</option>
-                                        <option value="Trinidad and Tobago">Trinidad and Tobago</option>
-                                        <option value="Tunisia">Tunisia</option>
                                         <option value="Turkey">Turkey</option>
-                                        <option value="Turkmenistan">Turkmenistan</option>
-                                        <option value="Turks and Caicos">Turks and Caicos Islands</option>
-                                        <option value="Tuvalu">Tuvalu</option>
-                                        <option value="Uganda">Uganda</option>
                                         <option value="Ukraine">Ukraine</option>
-                                        <option value="United Arab Emirates">United Arab Emirates</option>
-                                        <option value="United Kingdom">United Kingdom</option>
-                                        <option value="United States">United States</option>
-                                        <option value="United States Minor Outlying Islands">United States Minor Outlying Islands</option>
+                                        <option value="UnitedKingdom">United Kingdom</option>
+                                        <option value="UnitedStates">United States</option>
                                         <option value="Uruguay">Uruguay</option>
                                         <option value="Uzbekistan">Uzbekistan</option>
                                         <option value="Vanuatu">Vanuatu</option>
                                         <option value="Venezuela">Venezuela</option>
                                         <option value="Vietnam">Viet Nam</option>
-                                        <option value="Virgin Islands (British)">Virgin Islands (British)</option>
-                                        <option value="Virgin Islands (U.S)">Virgin Islands (U.S.)</option>
-                                        <option value="Wallis and Futana Islands">Wallis and Futuna Islands</option>
-                                        <option value="Western Sahara">Western Sahara</option>
                                         <option value="Yemen">Yemen</option>
                                         <option value="Yugoslavia">Yugoslavia</option>
                                         <option value="Zambia">Zambia</option>
@@ -846,8 +808,8 @@ if(!isset($_SESSION['adminID'])){
         <div id="addbid"  class="w3-modal"  href="https://www.w3schools.com/w3css/4/w3.css">
                         <div class="w3-modal-content w3-animate-zoom" style="max-width:330px;">
                             <div class="w3-container w3-teal">
-                                <span style="height:40px; padding-bottom:1%" onclick="document.getElementById('addbid').style.display='none'" class="w3-button w3-display-topright w3-large">x</span>
-                                <h3 style="margin-top:2%;">Add a new bid!</h3>
+                                <span style="color:black;height:40px; padding-bottom:1%" onclick="document.getElementById('addbid').style.display='none'" class="w3-button w3-display-topright w3-large">x</span>
+                               <b style="margin-top:2%;"> ADD A NEW BID </b>
                             </div>
                          
                             <div class="container">                
@@ -861,7 +823,7 @@ if(!isset($_SESSION['adminID'])){
                                         <option value="News">News</option>
                                         <option value="Entertainment">Entertainment</option>
                                         <option value="Beauty">Beauty</option>  
-                                        <option value="Personal Care">Personal Care</option>
+                                        <option value="PersonalCare">Personal Care</option>
                                         <option value="Travel">Travel</option>
                                         <option value="Health">Health</option> 
                                         <option value="Fitness">Fitness</option>
@@ -870,15 +832,15 @@ if(!isset($_SESSION['adminID'])){
                                         <option value="Art">Art</option>
                                         <option value="Cars">Cars</option>
                                         <option value="Motorcycles">Motorcycles</option>
-                                        <option value="Family and Parenting">Family &amp; Parenting</option>
+                                        <option value="FamilyandParenting">Family &amp; Parenting</option>
                                         <option value="Drinks">Drinks</option>
-                                        <option value="Home and Garden">Home &amp; Garden</option>
+                                        <option value="HomeandGarden">Home &amp; Garden</option>
                                         <option value="Weddings">Weddings</option>
                                         <option value="Business">Business</option>
-                                        <option value="Computers and Technology">Computers &amp; Technology</option>
+                                        <option value="ComputersandTechnology">Computers &amp; Technology</option>
                                         <option value="Science">Science</option>
-                                        <option value="Video games">Video Games</option>
-                                        <option value="Fashion and Style">Fashion &amp; Style</option> 
+                                        <option value="Videogames">Video Games</option>
+                                        <option value="FashionandStyle">Fashion &amp; Style</option> 
                                         <option value="Education">Education</option>
                                    
                                            </select>
@@ -895,20 +857,12 @@ if(!isset($_SESSION['adminID'])){
                                     <br>
                                    <div id="add"> <label for="country" >Geography</label><span class="error">*</span>
                                       <select name='country' class='dropdown' style=" width:200px; color:black;" required>
-                                          
-                                        <option disabled selected value> -- select an option -- </option>
+                                         <option disabled selected value> -- select one option -- </option>
                                         <option value="Afghanistan">Afghanistan</option>
                                         <option value="Albania">Albania</option>
                                         <option value="Algeria">Algeria</option>
-                                        <option value="American Samoa">American Samoa</option>
-                                        <option value="Andorra">Andorra</option>
-                                        <option value="Angola">Angola</option>
-                                        <option value="Anguilla">Anguilla</option>
-                                        <option value="Antartica">Antarctica</option>
-                                        <option value="Antigua and Barbuda">Antigua and Barbuda</option>
                                         <option value="Argentina">Argentina</option>
                                         <option value="Armenia">Armenia</option>
-                                        <option value="Aruba">Aruba</option>
                                         <option value="Australia">Australia</option>
                                         <option value="Austria">Austria</option>
                                         <option value="Azerbaijan">Azerbaijan</option>
@@ -918,65 +872,30 @@ if(!isset($_SESSION['adminID'])){
                                         <option value="Barbados">Barbados</option>
                                         <option value="Belarus">Belarus</option>
                                         <option value="Belgium">Belgium</option>
-                                        <option value="Belize">Belize</option>
-                                        <option value="Benin">Benin</option>
-                                        <option value="Bermuda">Bermuda</option>
-                                        <option value="Bhutan">Bhutan</option>
-                                        <option value="Bolivia">Bolivia</option>
-                                        <option value="Bosnia and Herzegowina">Bosnia and Herzegowina</option>
-                                        <option value="Botswana">Botswana</option>
-                                        <option value="Bouvet Island">Bouvet Island</option>
+                                       <option value="Bermuda">Bermuda</option>
                                         <option value="Brazil">Brazil</option>
-                                        <option value="British Indian Ocean Territory">British Indian Ocean Territory</option>
-                                        <option value="Brunei Darussalam">Brunei Darussalam</option>
                                         <option value="Bulgaria">Bulgaria</option>
-                                        <option value="Burkina Faso">Burkina Faso</option>
-                                        <option value="Burundi">Burundi</option>
-                                        <option value="Cambodia">Cambodia</option>
-                                        <option value="Cameroon">Cameroon</option>
                                         <option value="Canada">Canada</option>
-                                        <option value="Cape Verde">Cape Verde</option>
-                                        <option value="Cayman Islands">Cayman Islands</option>
-                                        <option value="Central African Republic">Central African Republic</option>
-                                        <option value="Chad">Chad</option>
                                         <option value="Chile">Chile</option>
                                         <option value="China">China</option>
-                                        <option value="Christmas Island">Christmas Island</option>
-                                        <option value="Cocos Islands">Cocos (Keeling) Islands</option>
                                         <option value="Colombia">Colombia</option>
                                         <option value="Comoros">Comoros</option>
                                         <option value="Congo">Congo</option>
-                                        <option value="Congo">Congo, the Democratic Republic of the</option>
-                                        <option value="Cook Islands">Cook Islands</option>
-                                        <option value="Costa Rica">Costa Rica</option>
-                                        <option value="Cota DIvoire">Cote dIvoire</option>
+                                       <option value="CostaRica">Costa Rica</option>
                                         <option value="Croatia">Croatia (Hrvatska)</option>
                                         <option value="Cuba">Cuba</option>
-                                        <option value="Cyprus" >Cyprus</option>
-                                        <option value="Czech Republic">Czech Republic</option>
+                                        <option value="Cyprus">Cyprus</option>
+                                        <option value="CzechRepublic">Czech Republic</option>
                                         <option value="Denmark">Denmark</option>
                                         <option value="Djibouti">Djibouti</option>
                                         <option value="Dominica">Dominica</option>
-                                        <option value="Dominican Republic">Dominican Republic</option>
-                                        <option value="East Timor">East Timor</option>
-                                        <option value="Ecuador">Ecuador</option>
+                                        <option value="DominicanRepublic">Dominican Republic</option>
                                         <option value="Egypt">Egypt</option>
-                                        <option value="El Salvador">El Salvador</option>
-                                        <option value="Equatorial Guinea">Equatorial Guinea</option>
-                                        <option value="Eritrea">Eritrea</option>
                                         <option value="Estonia">Estonia</option>
                                         <option value="Ethiopia">Ethiopia</option>
-                                        <option value="Falkland Islands">Falkland Islands (Malvinas)</option>
-                                        <option value="Faroe Islands">Faroe Islands</option>
-                                        <option value="Fiji">Fiji</option>
+                                       <option value="Fiji">Fiji</option>
                                         <option value="Finland">Finland</option>
                                         <option value="France">France</option>
-                                        <option value="France Metropolitan">France, Metropolitan</option>
-                                        <option value="French Guiana">French Guiana</option>
-                                        <option value="French Polynesia">French Polynesia</option>
-                                        <option value="French Southern Territories">French Southern Territories</option>
-                                        <option value="Gabon">Gabon</option>
-                                        <option value="Gambia">Gambia</option>
                                         <option value="Georgia">Georgia</option>
                                         <option value="Germany">Germany</option>
                                         <option value="Ghana">Ghana</option>
@@ -988,13 +907,7 @@ if(!isset($_SESSION['adminID'])){
                                         <option value="Guam">Guam</option>
                                         <option value="Guatemala">Guatemala</option>
                                         <option value="Guinea">Guinea</option>
-                                        <option value="Guinea-Bissau">Guinea-Bissau</option>
-                                        <option value="Guyana">Guyana</option>
-                                        <option value="Haiti">Haiti</option>
-                                        <option value="Heard and McDonald Islands">Heard and Mc Donald Islands</option>
-                                        <option value="Holy See">Holy See (Vatican City State)</option>
-                                        <option value="Honduras">Honduras</option>
-                                        <option value="Hong Kong">Hong Kong</option>
+                                        <option value="HongKong">Hong Kong</option>
                                         <option value="Hungary">Hungary</option>
                                         <option value="Iceland">Iceland</option>
                                         <option value="India">India</option>
@@ -1010,128 +923,57 @@ if(!isset($_SESSION['adminID'])){
                                         <option value="Kazakhstan">Kazakhstan</option>
                                         <option value="Kenya">Kenya</option>
                                         <option value="Kiribati">Kiribati</option>
-                                        <option value="Democratic Peoples Republic of Korea">Korea, Democratic People Republic of</option>
                                         <option value="Korea">Korea, Republic of</option>
-                                        <option value="Kuwait">Kuwait</option>
-                                        <option value="Kyrgyzstan">Kyrgyzstan</option>
-                                        <option value="Lao">Lao People Democratic Republic</option>
                                         <option value="Latvia">Latvia</option>
-                                        <option value="Lebanon">Lebanon</option>
-                                        <option value="Lesotho">Lesotho</option>
-                                        <option value="Liberia">Liberia</option>
-                                        <option value="Libyan Arab Jamahiriya">Libyan Arab Jamahiriya</option>
-                                        <option value="Liechtenstein">Liechtenstein</option>
-                                        <option value="Lithuania">Lithuania</option>
+                                       <option value="Lithuania">Lithuania</option>
                                         <option value="Luxembourg">Luxembourg</option>
-                                        <option value="Macau">Macau</option>
-                                        <option value="Macedonia">Macedonia, The Former Yugoslav Republic of</option>
                                         <option value="Madagascar">Madagascar</option>
-                                        <option value="Malawi">Malawi</option>
-                                        <option value="Malaysia">Malaysia</option>
                                         <option value="Maldives">Maldives</option>
-                                        <option value="Mali">Mali</option>
-                                        <option value="Malta">Malta</option>
-                                        <option value="Marshall Islands">Marshall Islands</option>
-                                        <option value="Martinique">Martinique</option>
-                                        <option value="Mauritania">Mauritania</option>
-                                        <option value="Mauritius">Mauritius</option>
-                                        <option value="Mayotte">Mayotte</option>
+                                       <option value="Malta">Malta</option>
                                         <option value="Mexico">Mexico</option>
-                                        <option value="Micronesia">Micronesia, Federated States of</option>
-                                        <option value="Moldova">Moldova, Republic of</option>
+                                      <option value="Moldova">Moldova, Republic of</option>
                                         <option value="Monaco">Monaco</option>
                                         <option value="Mongolia">Mongolia</option>
-                                        <option value="Montserrat">Montserrat</option>
                                         <option value="Morocco">Morocco</option>
                                         <option value="Mozambique">Mozambique</option>
                                         <option value="Myanmar">Myanmar</option>
                                         <option value="Namibia">Namibia</option>
-                                        <option value="Nauru">Nauru</option>
-                                        <option value="Nepal">Nepal</option>
                                         <option value="Netherlands">Netherlands</option>
-                                        <option value="Netherlands Antilles">Netherlands Antilles</option>
-                                        <option value="New Caledonia">New Caledonia</option>
-                                        <option value="New Zealand">New Zealand</option>
-                                        <option value="Nicaragua">Nicaragua</option>
-                                        <option value="Niger">Niger</option>
+                                        <option value="NewZealand">New Zealand</option>
                                         <option value="Nigeria">Nigeria</option>
-                                        <option value="Niue">Niue</option>
-                                        <option value="Norfolk Island">Norfolk Island</option>
-                                        <option value="Northern Mariana Islands">Northern Mariana Islands</option>
                                         <option value="Norway">Norway</option>
-                                        <option value="Oman">Oman</option>
                                         <option value="Pakistan">Pakistan</option>
-                                        <option value="Palau">Palau</option>
-                                        <option value="Panama">Panama</option>
-                                        <option value="Papua New Guinea">Papua New Guinea</option>
-                                        <option value="Paraguay">Paraguay</option>
                                         <option value="Peru">Peru</option>
                                         <option value="Philippines">Philippines</option>
-                                        <option value="Pitcairn">Pitcairn</option>
                                         <option value="Poland">Poland</option>
                                         <option value="Portugal">Portugal</option>
-                                        <option value="Puerto Rico">Puerto Rico</option>
-                                        <option value="Qatar">Qatar</option>
-                                        <option value="Reunion">Reunion</option>
+                                        <option value="PuertoRico">Puerto Rico</option>
                                         <option value="Romania">Romania</option>
-                                        <option value="Russia">Russian Federation</option>
-                                        <option value="Rwanda">Rwanda</option>
-                                        <option value="Saint Kitts and Nevis">Saint Kitts and Nevis</option> 
-                                        <option value="Saint LUCIA">Saint LUCIA</option>
-                                        <option value="Saint Vincent">Saint Vincent and the Grenadines</option>
-                                        <option value="Samoa">Samoa</option>
-                                        <option value="San Marino">San Marino</option>
-                                        <option value="Sao Tome and Principe">Sao Tome and Principe</option> 
-                                        <option value="Saudi Arabia">Saudi Arabia</option>
-                                        <option value="Senegal">Senegal</option>
+                                        <option value="Russia">Russia</option>
+                                        <option value="SanMarino">San Marino</option>
+                                        <option value="SaudiArabia">Saudi Arabia</option>
                                         <option value="Seychelles">Seychelles</option>
-                                        <option value="Sierra">Sierra Leone</option>
                                         <option value="Singapore">Singapore</option>
                                         <option value="Slovakia">Slovakia (Slovak Republic)</option>
                                         <option value="Slovenia">Slovenia</option>
-                                        <option value="Solomon Islands">Solomon Islands</option>
-                                        <option value="Somalia">Somalia</option>
-                                        <option value="South Africa">South Africa</option>
-                                        <option value="South Georgia">South Georgia and the South Sandwich Islands</option>
-                                        <option value="Span">Spain</option>
+                                        <option value="SouthAfrica">South Africa</option>
+                                        <option value="SouthGeorgia">South Georgia and the South Sandwich Islands</option>
+                                        <option value="Spain">Spain</option>
                                         <option value="SriLanka">Sri Lanka</option>
-                                        <option value="St. Helena">St. Helena</option>
-                                        <option value="St. Pierre and Miguelon">St. Pierre and Miquelon</option>
-                                        <option value="Sudan">Sudan</option>
-                                        <option value="Suriname">Suriname</option>
-                                        <option value="Svalbard">Svalbard and Jan Mayen Islands</option>
-                                        <option value="Swaziland">Swaziland</option>
                                         <option value="Sweden">Sweden</option>
                                         <option value="Switzerland">Switzerland</option>
                                         <option value="Syria">Syrian Arab Republic</option>
-                                        <option value="Taiwan">Taiwan, Province of China</option>
-                                        <option value="Tajikistan">Tajikistan</option>
                                         <option value="Tanzania">Tanzania, United Republic of</option>
                                         <option value="Thailand">Thailand</option>
-                                        <option value="Togo">Togo</option>
-                                        <option value="Tokelau">Tokelau</option>
-                                        <option value="Tonga">Tonga</option>
-                                        <option value="Trinidad and Tobago">Trinidad and Tobago</option>
-                                        <option value="Tunisia">Tunisia</option>
                                         <option value="Turkey">Turkey</option>
-                                        <option value="Turkmenistan">Turkmenistan</option>
-                                        <option value="Turks and Caicos">Turks and Caicos Islands</option>
-                                        <option value="Tuvalu">Tuvalu</option>
-                                        <option value="Uganda">Uganda</option>
                                         <option value="Ukraine">Ukraine</option>
-                                        <option value="United Arab Emirates">United Arab Emirates</option>
-                                        <option value="United Kingdom">United Kingdom</option>
-                                        <option value="United States">United States</option>
-                                        <option value="United States Minor Outlying Islands">United States Minor Outlying Islands</option>
+                                        <option value="UnitedKingdom">United Kingdom</option>
+                                        <option value="UnitedStates">United States</option>
                                         <option value="Uruguay">Uruguay</option>
                                         <option value="Uzbekistan">Uzbekistan</option>
                                         <option value="Vanuatu">Vanuatu</option>
                                         <option value="Venezuela">Venezuela</option>
                                         <option value="Vietnam">Viet Nam</option>
-                                        <option value="Virgin Islands (British)">Virgin Islands (British)</option>
-                                        <option value="Virgin Islands (U.S)">Virgin Islands (U.S.)</option>
-                                        <option value="Wallis and Futana Islands">Wallis and Futuna Islands</option>
-                                        <option value="Western Sahara">Western Sahara</option>
                                         <option value="Yemen">Yemen</option>
                                         <option value="Yugoslavia">Yugoslavia</option>
                                         <option value="Zambia">Zambia</option>
@@ -1185,14 +1027,15 @@ if(!isset($_SESSION['adminID'])){
     <footer>
         <center><div id="footer">
             <div style="display:inline">
-                <a href="index.php#aboutus">About us</a><br>
-                <div id="social">
-                    <h3 style="font-size:12px;color:black;">Contact us</h3>
+                <a href="index.php">Logout</a> 
+            </div>
+             <div id="social">
+                    Contact Us <br>
                     <a href="https://www.facebook.com/kwtcCia" class="fa fa-facebook"></a>
                     <a href="" class="fa fa-twitter"></a>
                     <a href="https://www.instagram.com/kwnstantina_tseriwtou/?hl=en" class="fa fa-instagram"></a>	
 			     </div>
-            </div> 
+               
         </div>
         </center>    
         <br>

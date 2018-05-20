@@ -40,13 +40,8 @@ attacks0('DYN_GEQ', _, Culprit, _, CA) :-
 	%% FIX ME: Add check so that Culprit is not a preference rule
 
 	conflict(Culprit, CC),
-	%%write('Culprit: '), writeln(Culprit),
-	
-	%%nbassili
-	not( rule(Culprit, prefer(_,_) ,_) ),
-	%%writeln('         OK'),
 
-	rule(SigHP, prefer(CC, Culprit), BodyHP),
+	find_pref_rule(SigHP, prefer(CC, Culprit), BodyHP),
 
 	resolve(BodyHP, ResolventHP),
 
@@ -61,6 +56,15 @@ attacks0('DYN_GEQ', _, Culprit, _, CA) :-
 %%% For Abducibles
 
 
+attacks0('ASS', 'D', ass(L), _, CA) :-
+
+	complement(L, NL),
+
+	abducible(NL, _),
+
+	CA = [ass(NL)].
+
+
 attacks0('GEN', _, ass(L), _, CA) :-
 
 	complement(L, NL),
@@ -70,23 +74,6 @@ attacks0('GEN', _, ass(L), _, CA) :-
 	resolve(Body, Resolvent),
 
 	CA = [Sig|Resolvent].
-
-attacks0('ASS', 'D', ass(L), _, CA) :-
-
-	complement(L, NL),
-	
-	%% nbassili - Temporary fix: mutually exclusive with the previous rule
-	%% needs to be optimized using *->
-	not( (rule(_Sig, NL, Body),
-	      resolve(Body, _Resolvent)
-	      )
-	),
-
-	abducible(NL, _),
-
-	CA = [ass(NL)].
-
-
 
 /*
 attacks0('DYN_EQ', 'D', Culprit, A, CA) :-
@@ -102,4 +89,14 @@ attacks0('DYN_EQ', 'D', Culprit, A, CA) :-
 	union([CC|ResolventCC], [ass(neg(prefer(Culprit,CC)))], CA).
 
 */
+
+find_pref_rule(Rule, prefer(Rule1, Rule2), Body) :-
+	rule(Rule, prefer(Rule1, Rule2), Body).
+find_pref_rule(_Rule, prefer(Rule1, Rule2), []) :-
+	nonvar(Rule1), nonvar(Rule2),
+	rule(Rule1,_,_), Rule1 =.. [R1|Args], 
+	rule(Rule2,_,_), Rule2 =.. [R2|Args], 
+	ruleset(RS1, Rules1), member(R1, Rules1),
+	ruleset(RS2, Rules2), member(R2, Rules2),
+	ruleset_pref(RS1,RS2).
 

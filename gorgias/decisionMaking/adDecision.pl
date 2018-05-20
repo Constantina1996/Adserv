@@ -2,13 +2,12 @@
 :- compile('../ext/lpwnf').
 :- compile('./predicates.pl').
 :- compile('./bids.pl').
+:- compile('./policy.pl').
 
 :- dynamic checkprice/1,matchinterests/1,matchgeography/1,ad/4,sex/1,age/1,
-                   geography/1,categorybysex/2,categorybyage/2,checkage/1,checksex/1,policy/1,adList/1,check/2.
+                   geography/1,categorybysex/2,categorybyage/2,checkage/1,checksex/1,policy/1,check/2.
 
-
-                                   
-                                        
+                               
 %%%%%%%%%%%% FUNCTIONS %%%%%%%%%%%%%%%%%%%%
 
 matchinterests(B):-ad(B,I,_,_),interests(I).
@@ -20,15 +19,15 @@ checkprice(B):-adList(Z),check(B,Z).
 check(_,[]).
 
 check(B,[Z|Zs]):-ad(B,_,P1,_),ad(Z,_,P2,_),B=\=Z,ad(Z,_,P2,_)->P1>=P2,check(B,Zs);
-                                           check(B,Zs).
+																		check(B,Zs).
 
-checkage(B):-ad(B,I,_,_),age(A),categorybyage(I,A). 
+checkage(B):-ad(B,I,_,_),age(A),A\='undefined'->categorybyage(I,A). 
 
-checksex(B):-ad(B,I,_,_),sex(S),categorybysex(I,S).
+checksex(B):-ad(B,I,_,_),sex(S),S\='undefined'->categorybysex(I,S).
 
 categorybyage(I,A):- A>=0,A=<10->(I=sports;I=entertainment;I=pets; I=art);
  
-                     A>=11,A=<18->(I=videogames;I=beauty;I=sports;I=entertainment;I=beauty;I=fashionandstyle;I=computersandtechnology;I=pets;I=education;I=science);
+                     A>=11,A=<18->(I=videogames;I=sports;I=entertainment;I=fashionandstyle;I=computersandtechnology;I=pets;I=education;I=science);
 
                      A>=19,A=<25->(I=personalcare;I=entertainment;I=fashionandstyle;I=food;I=beauty;I=travel;I=computerandtechnology;I=cars;I=sports;I=pets;I=business;I=fitness;I=news;I=videogames;I=drinks;I=education;I=science);
                             
@@ -58,16 +57,16 @@ rule(r(X), show(X), []):-ad(X,_,_,_).
 
 %%%%%%%%%%%%%%%%%%%% 111 PREFER AD WITH USER INTERESTS HIGHPRICE AND USER GEOGRAPGY %%%%%%%%%%%%%%%%%
 
-rule(ihg(X,I), prefer(r(X),r(I)),[]):-matchinterests(X),ad(I,_,_,_),X=\=I,highprice(Z),member(X,Z),matchgeography(X).
+rule(ihg(X,I), prefer(r(X),r(I)),[]):-matchinterests(X),ad(I,_,_,_),X=\=I,checkprice(X),matchgeography(X).
 
 %%%%%%%%%%%%%%%%%%%% 110 PREFER AD WITH USER INTERESTS HIGHPRICE %%%%%%%%%%%%%%%%%
 
-rule(ih(X,I), prefer(r(X),r(I)),[]):-matchinterests(X),ad(I,_,_,_),X=\=I,highprice(Z),member(X,Z),not(matchgeography(X)).
+rule(ih(X,I), prefer(r(X),r(I)),[]):-matchinterests(X),ad(I,_,_,_),X=\=I,checkprice(X),not(matchgeography(X)).
 
 
 %%%%%%%%%%%%%%%%%%%% 101 PREFER AD WITH USER INTERESTS AND USER GEOGRAPGY %%%%%%%%%%%%%%%%%
 
-rule(ig(X,I), prefer(r(X),r(I)),[]):- matchinterests(X),matchgeography(X),ad(I,_,_,_),X=\=I,highprice(Z),not(member(X,Z)).
+rule(ig(X,I), prefer(r(X),r(I)),[]):- matchinterests(X),matchgeography(X),ad(I,_,_,_),X=\=I,not(checkprice(X)).
 
 
 %%%%%%%%%%%% 100 PREFER ADS ON USER INTERESTS %%%%%%%%%%%%%%%%%%%%
@@ -77,15 +76,15 @@ rule(i(X,I), prefer(r(X),r(I)),[]):-matchinterests(X),not(matchgeography(X)),ad(
 
 %%%%%%%%%%%%%%%%%%%% 011 PREFER AD WITH HIGHPRICE AND GEOGRAPHY %%%%%%%%%%%%%%%%%
 
-rule(hg(X,I), prefer(r(X),r(I)),[]):-matchgeography(X),ad(I,_,_,_),X=\=I,highprice(Z),member(X,Z),not(matchinterests(X)).
+rule(hg(X,I), prefer(r(X),r(I)),[]):-matchgeography(X),ad(I,_,_,_),X=\=I,checkprice(X),not(matchinterests(X)).
 
 %%%%%%%%%%%%%%%%%%%% 010 PREFER AD WITH HIGHPRICE %%%%%%%%%%%%%%%%%
 
-rule(h(X,I), prefer(r(X),r(I)),[]):- not(matchinterests(X)),ad(I,_,_,_),X=\=I,highprice(Z),member(X,Z),not(matchgeography(X)).
+rule(h(X,I), prefer(r(X),r(I)),[]):- not(matchinterests(X)),ad(I,_,_,_),X=\=I,checkprice(X),not(matchgeography(X)).
 
 %%%%%%%%%%%%%%%%%%% 001 PREFER AD ON USER GEOGRAPGY %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-rule(g(X,I), prefer(r(X),r(I)),[]):- policy(3),matchgeography(X),not(matchinterests(X)),ad(I,_,_,_),X=\=I,highprice(Z),not(member(X,Z)).
+rule(g(X,I), prefer(r(X),r(I)),[]):- policy(3),matchgeography(X),not(matchinterests(X)),ad(I,_,_,_),X=\=I,not(checkprice(X)).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PRIORITY INTERESTS,HIGHPRICE,GEOGRAPHY %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

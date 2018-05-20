@@ -1,9 +1,5 @@
-interests(health).
-interests(food).
-interests(pets).
-age(22).
-geography(cy).
-policy(1).
-sex(fe).
-adList([1,2,3,4,5,6,7,8,9]).
-highprice([1,3,6,8,9]).
+interests(undefined).
+age(undefined).
+geography(undefined).
+sex(undefined).
+adList([35,36,37,38,39,40,41,42,43,44]).
